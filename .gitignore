@@ -1,0 +1,12 @@
+# R
+.Rproj.user/
+.Rhistory
+.RData
+*.Rproj
+
+# Large/raw data — keep harmonized .rds in data/ but ignore raw downloads
+data/raw/
+
+# OS
+.DS_Store
+Thumbs.db
