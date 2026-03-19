@@ -6,22 +6,16 @@
 #' isoform rows in \code{mirna_log}, then returns a named list where each
 #' element is a numeric vector of length = number of patients.
 #'
-#' @param mirna_log Numeric matrix (miRNAs x patients). Rownames are precursor
-#'   IDs in original (possibly isoform-suffixed) format.
-#' @param norm_ids Character vector of normalized IDs, same length as
-#'   \code{nrow(mirna_log)}, parallel to rownames(mirna_log).
-#' @param mirna_norm_map Data frame with columns \code{original} and
-#'   \code{norm} mapping raw precursor IDs to normalized IDs.
-#' @return Named list; each element is a numeric vector (length = ncol(mirna_log))
-#'   representing averaged expression for that normalized miRNA across patients.
+#' @param mirna_log Numeric matrix (miRNAs x patients).
+#' @param norm_ids Character vector of normalized IDs, parallel to rownames(mirna_log).
+#' @param mirna_norm_map Data frame with columns \code{original} and \code{norm}.
+#' @return Named list of numeric vectors (one per unique normalized miRNA).
 #' @keywords internal
 .build_mirna_expr <- function(mirna_log, norm_ids, mirna_norm_map) {
 
-  # Map rownames to normalized IDs via mirna_norm_map if norm_ids not supplied
   if (missing(norm_ids) || is.null(norm_ids)) {
     idx      <- match(rownames(mirna_log), mirna_norm_map$original)
-    norm_ids <- ifelse(is.na(idx), rownames(mirna_log),
-                       mirna_norm_map$norm[idx])
+    norm_ids <- ifelse(is.na(idx), rownames(mirna_log), mirna_norm_map$norm[idx])
   }
 
   unique_ids <- unique(norm_ids)
@@ -41,13 +35,24 @@
 
 #' Build an averaged miRNA expression matrix
 #'
-#' Collapses isoform rows by averaging, returning a matrix with one row per
-#' unique normalized miRNA ID.
+#' Collapses isoform rows by averaging and optionally subsets to specific
+#' patients, returning a matrix with one row per unique normalized miRNA ID.
 #'
-#' @inheritParams .build_mirna_expr
+#' @param mirna_log Numeric matrix (miRNAs x patients).
+#' @param norm_ids Character vector of normalized IDs, parallel to rownames(mirna_log).
+#' @param mirna_norm_map Data frame with columns \code{original} and \code{norm}.
+#' @param patients Optional character vector of patient IDs to subset columns.
 #' @return Numeric matrix (unique miRNAs x patients).
 #' @keywords internal
-.build_mirna_expr_mat <- function(mirna_log, norm_ids, mirna_norm_map) {
+.build_mirna_expr_mat <- function(mirna_log, norm_ids, mirna_norm_map,
+                                  patients = NULL) {
   expr_list <- .build_mirna_expr(mirna_log, norm_ids, mirna_norm_map)
-  do.call(rbind, expr_list)
+  mat       <- do.call(rbind, expr_list)
+
+  if (!is.null(patients)) {
+    patients <- intersect(patients, colnames(mat))
+    mat      <- mat[, patients, drop = FALSE]
+  }
+
+  mat
 }

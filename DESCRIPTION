@@ -18,7 +18,6 @@ Imports:
     dplyr (>= 1.0.0),
     survival (>= 3.0.0),
     multiMiR (>= 1.12.0),
-    biomaRt (>= 2.46.0),
     stats,
     methods
 Suggests:
