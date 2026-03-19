@@ -1,16 +1,19 @@
 \name{harmonize_barcode}
 \alias{harmonize_barcode}
-\title{harmonize_barcode}
+\title{Harmonize TCGA barcodes to patient level}
 \usage{
-harmonize_barcode(...)
+harmonize_barcode(x)
 }
 \arguments{
-\item{...}{See source file for full parameter documentation.}
+\item{x}{Character vector of TCGA barcodes.}
 }
 \value{
-See source file for return value documentation.
+Character vector of 12-character patient-level barcodes.
 }
 \description{
-harmonize_barcode — part of the mirBottleneck package.
-See \code{R/harmonize_barcode.R} or the package vignette for details.
+Standardizes any TCGA barcode to the first 12 characters (patient-level),
+removing sample type, vial, portion, and analyte suffixes.
+}
+\examples{
+harmonize_barcode("TCGA-3A-A9I7-01A-21R-A38N-13")
 }

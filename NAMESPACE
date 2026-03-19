@@ -15,3 +15,4 @@ importFrom(survival, coxph, Surv, survfit, survdiff)
 importFrom(stats, lm, cor, median, var, weighted.mean, AIC, pchisq,
            p.adjust, summary.lm)
 importFrom(methods, is)
+importFrom(utils, head)
