@@ -30,11 +30,13 @@ normalize_mirna <- function(x) {
 #' Normalize a numeric vector to 0-1 range
 #'
 #' @param x Numeric vector
-#' @return Numeric vector scaled to [0, 1]
+#' @return Numeric vector scaled to [0, 1]; returns all-zero for zero-variance
+#'   input, and all-NA for non-finite input.
 #' @keywords internal
 normalize_01 <- function(x) {
   rng <- range(x, na.rm = TRUE)
-  if (rng[1] == rng[2]) return(rep(0.5, length(x)))
+  if (!is.finite(rng[1]) || !is.finite(rng[2])) return(rep(NA_real_, length(x)))
+  if (rng[2] - rng[1] == 0) return(rep(0, length(x)))
   (x - rng[1]) / (rng[2] - rng[1])
 }
 

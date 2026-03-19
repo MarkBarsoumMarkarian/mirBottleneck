@@ -26,8 +26,10 @@ composite_score <- function(mirna_log, classified_df, clinical_df,
                             mirna_norm_map, cox_p_threshold = 0.15) {
 
   shared_patients <- clinical_df$patient
-  mirna_expr_mat  <- .build_mirna_expr_mat(mirna_log, classified_df$mirna,
-                                            mirna_norm_map, shared_patients)
+  mirna_expr_mat  <- .build_mirna_expr_mat(mirna_log,
+                                           norm_ids     = classified_df$mirna,
+                                           mirna_norm_map = mirna_norm_map,
+                                           patients     = shared_patients)
 
   base_df <- clinical_df[!is.na(clinical_df$OS_days) & clinical_df$OS_days > 0, ]
 
@@ -72,7 +74,7 @@ composite_score <- function(mirna_log, classified_df, clinical_df,
   sel_mat <- mirna_expr_mat[contributing$mirna, shared_patients, drop = FALSE]
 
   patient_scores <- apply(sel_mat, 2, function(expr_vec) {
-    weights <- abs(contributing$coef)
+    weights  <- abs(contributing$coef)
     directed <- expr_vec * sign(contributing$coef)
     weighted.mean(directed, w = weights, na.rm = TRUE)
   })
