@@ -31,6 +31,6 @@ Suggests:
     BiocStyle,
     knitr,
     rmarkdown
-biocViews: GeneExpression, Survival, miRNA, TCGA
+biocViews: GeneExpression, Survival, miRNA, RNASeq, Transcriptomics, BiomedicalInformatics, ImmunoOncology, Pancreas
 Config/testthat/edition: 3
 VignetteBuilder: knitr
