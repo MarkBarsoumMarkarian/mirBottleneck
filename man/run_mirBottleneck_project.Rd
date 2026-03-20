@@ -17,7 +17,9 @@ run_mirBottleneck_project(
   vss_keep_top = 300,
   n_perm = 200,
   max_targets = 200,
-  cox_p_threshold = 0.15
+  cox_p_threshold = 0.15,
+  report = FALSE,
+  cohort_name = "TCGA-PAAD"
 )
 }
 \arguments{
@@ -35,6 +37,8 @@ run_mirBottleneck_project(
 \item{n_perm}{Integer. Permutations for coherence p-values (default 200).}
 \item{max_targets}{Integer. Max targets per miRNA for coherence scoring (default 200).}
 \item{cox_p_threshold}{Numeric. p-value cutoff for composite score inclusion (default 0.15).}
+\item{report}{Logical. Generate a self-contained HTML report after analysis (default FALSE).}
+\item{cohort_name}{Character. Cohort label shown in the HTML report header (default "TCGA-PAAD").}
 }
 \value{
 Invisibly returns a named list of all analysis outputs. Results are also

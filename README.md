@@ -18,7 +18,7 @@
 
 miRNAs are then classified into four functional archetypes — **Silencer**, **Conductor**, **Dual**, and **Weak** — and a patient-level **composite bottleneck index** is built from the top survival-associated bottleneck miRNAs. This index is evaluated against overall survival using Cox proportional hazards models.
 
-![Kaplan-Meier: High vs Low Bottleneck Score](figures/km_plot.png)
+![Kaplan-Meier: High vs Low Bottleneck Score](inst/figures/km_plot.png)
 
 ---
 
