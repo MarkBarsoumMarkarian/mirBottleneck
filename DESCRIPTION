@@ -24,7 +24,6 @@ Imports:
     stats,
     methods
 Suggests:
-    TCGAbiolinks,
     maftools,
     survminer,
     testthat (>= 3.0.0),
