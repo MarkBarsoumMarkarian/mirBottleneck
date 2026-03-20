@@ -45,7 +45,9 @@ run_mirBottleneck_project <- function(
   vss_keep_top = 300,
   n_perm = 200,
   max_targets = 200,
-  cox_p_threshold = 0.15
+  cox_p_threshold = 0.15,
+  report = FALSE,
+  cohort_name = "TCGA-PAAD"
 ) {
   if (missing(out_dir) || is.null(out_dir) || !nzchar(out_dir)) {
     stop("out_dir is required.")
@@ -149,12 +151,29 @@ run_mirBottleneck_project <- function(
   saveRDS(surv, file = file.path(out_dir, "survival_results.rds"))
   utils::write.csv(surv$surv_df, file = file.path(out_dir, "survival_df.csv"), row.names = FALSE)
 
-  invisible(list(
-    mirna_targets = mirna_targets,
-    vss_scores = vss_scores,
-    coherence_scores = coherence_scores,
-    combined = combined,
-    composite = comp,
-    survival = surv
-  ))
+  results <- list(
+    combined_bottleneck = combined,
+    cox_individual      = comp$cox_individual,
+    cox_final           = surv$cox_combined,
+    survival_df         = surv$surv_df,
+    mirna_targets       = mirna_targets,
+    contributing_mirnas = comp$contributing_mirnas,
+    clinical_df         = clinical_df,
+    vss_scores          = vss_scores,
+    coherence_scores    = coherence_scores,
+    patient_scores      = comp$patient_scores,
+    composite           = comp,
+    survival            = surv
+  )
+
+  if (isTRUE(report)) {
+    generate_report(
+      results     = results,
+      out_dir     = out_dir,
+      cohort_name = cohort_name,
+      open        = FALSE
+    )
+  }
+
+  invisible(results)
 }
