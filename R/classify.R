@@ -8,7 +8,7 @@
 #' @export
 classify_bottleneck <- function(vss_scores, coherence_scores) {
   combined <- dplyr::inner_join(vss_scores, coherence_scores, by = "mirna")
-  combined <- combined %>%
+  combined <- combined |>
     dplyr::mutate(
       vss_norm         = normalize_01(vss),
       coherence_norm   = normalize_01(coherence_score),
@@ -16,7 +16,7 @@ classify_bottleneck <- function(vss_scores, coherence_scores) {
     )
   vss_med <- median(combined$vss_norm,       na.rm = TRUE)
   coh_med <- median(combined$coherence_norm, na.rm = TRUE)
-  combined <- combined %>%
+  combined <- combined |>
     dplyr::mutate(
       class = dplyr::case_when(
         vss_norm >= vss_med & coherence_norm >= coh_med ~ "dual",
@@ -24,7 +24,7 @@ classify_bottleneck <- function(vss_scores, coherence_scores) {
         vss_norm <  vss_med & coherence_norm >= coh_med ~ "conductor",
         TRUE ~ "weak"
       )
-    ) %>%
+    ) |>
     dplyr::arrange(dplyr::desc(bottleneck_index))
   message("Class distribution:")
   print(table(combined$class))

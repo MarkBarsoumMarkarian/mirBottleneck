@@ -58,18 +58,18 @@ build_network <- function(mirna_ids,
   interactions <- dplyr::filter(interactions, database == "mirtarbase")
 
   # Normalize miRNA IDs and filter to our targets
-  interactions <- interactions %>%
-    dplyr::mutate(mirna_norm = normalize_mirna(mature_mirna_id)) %>%
+  interactions <- interactions |>
+    dplyr::mutate(mirna_norm = normalize_mirna(mature_mirna_id)) |>
     dplyr::filter(target_symbol %in% rna_symbols)
 
   # Build per-miRNA target list
-  mirna_targets <- interactions %>%
-    dplyr::select(mirna = mirna_norm, target = target_symbol) %>%
-    dplyr::distinct() %>%
-    dplyr::group_by(mirna) %>%
+  mirna_targets <- interactions |>
+    dplyr::select(mirna = mirna_norm, target = target_symbol) |>
+    dplyr::distinct() |>
+    dplyr::group_by(mirna) |>
     dplyr::summarise(targets   = list(target),
                      n_targets = dplyr::n(),
-                     .groups   = "drop") %>%
+                     .groups   = "drop") |>
     dplyr::filter(n_targets >= min_targets)
 
   message("miRNAs with >= ", min_targets, " validated targets: ", nrow(mirna_targets))

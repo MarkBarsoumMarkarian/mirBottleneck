@@ -11,6 +11,9 @@ Description: Identifies miRNAs acting as transcriptome stabilizers in cancer
     conductor, dual, and weak categories. Computes a composite patient-level
     bottleneck index and evaluates its association with overall survival.
 License: MIT + file LICENSE
+URL: https://github.com/MarkBarsoumMarkarian/mirBottleneck
+BugReports: https://github.com/MarkBarsoumMarkarian/mirBottleneck/issues
+Depends: R (>= 4.1.0)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
@@ -18,12 +21,16 @@ Imports:
     dplyr (>= 1.0.0),
     survival (>= 3.0.0),
     multiMiR (>= 1.12.0),
-    biomaRt (>= 2.46.0),
     stats,
     methods
 Suggests:
     TCGAbiolinks,
     maftools,
     survminer,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    BiocStyle,
+    knitr,
+    rmarkdown
 biocViews: GeneExpression, Survival, miRNA, TCGA
+Config/testthat/edition: 3
+VignetteBuilder: knitr

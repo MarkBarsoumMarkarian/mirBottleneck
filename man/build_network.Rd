@@ -1,0 +1,28 @@
+\name{build_network}
+\alias{build_network}
+\title{Build miRNA-target interaction network}
+\usage{
+build_network(
+  mirna_ids,
+  rna_symbols,
+  batch_size = 50,
+  min_targets = 5,
+  rescue_mirnas = c("hsa-miR-21-5p", "hsa-miR-21-3p", "hsa-miR-155-5p",
+    "hsa-miR-155-3p", "hsa-miR-196a-5p", "hsa-miR-196b-5p", "hsa-miR-210-3p")
+)
+}
+\arguments{
+\item{mirna_ids}{Character vector of miRNA IDs (precursor format, e.g. hsa-mir-21).}
+\item{rna_symbols}{Character vector of gene symbols present in RNA-seq data.}
+\item{batch_size}{Integer. Number of miRNAs per multiMiR query (default 50).}
+\item{min_targets}{Integer. Minimum validated targets to retain a miRNA (default 5).}
+\item{rescue_mirnas}{Character vector of mature miRNA IDs to query explicitly.}
+}
+\value{
+A data frame with columns: mirna, targets (list column), n_targets.
+}
+\description{
+Retrieves validated miRNA-target interactions from miRTarBase via multiMiR,
+filters to targets present in the RNA-seq dataset, and returns a target list
+per miRNA. Queries are batched to avoid server timeouts.
+}

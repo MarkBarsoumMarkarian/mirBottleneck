@@ -1,0 +1,312 @@
+---
+title: "mirBottleneck: miRNA Bottleneck Scoring Workflow"
+author: "Mark Barsoum Markarian"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{mirBottleneck: miRNA Bottleneck Scoring Workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse  = TRUE,
+  comment   = "#>",
+  message   = FALSE,
+  warning   = FALSE,
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+# Introduction
+
+`mirBottleneck` identifies miRNAs that act as **transcriptome stabilizers** in
+cancer — miRNAs whose expression suppresses variance and induces coordinated
+programs across their validated target genes. It scores each miRNA along two
+complementary axes:
+
+- **Variance Suppression Score (VSS):** how much a miRNA reduces target gene
+  expression variance across patients.
+- **Coherence Score:** how much a miRNA coordinates its targets into coherent
+  co-expression programs (Δ mean pairwise correlation, high vs. low expressors).
+
+miRNAs are classified into four archetypes (**dual**, **silencer**,
+**conductor**, **weak**) and a patient-level **composite bottleneck index** is
+derived from the top survival-associated bottleneck miRNAs. The index is
+evaluated against overall survival using Cox proportional hazards models.
+
+This vignette demonstrates the full workflow using the **small synthetic toy
+dataset** shipped with the package (10 patients, 50 genes, 30 miRNAs). No
+network access or large downloads are required. For a real TCGA-PAAD run, see
+the `run_mirBottleneck_project()` section at the end.
+
+# Installation
+
+```{r install, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("mirBottleneck")
+```
+
+# Load the package
+
+```{r load}
+library(mirBottleneck)
+```
+
+# Toy dataset
+
+The package ships five small synthetic objects in `inst/extdata/`. Use
+`.toy_paths()` to locate them — no hard-coded paths needed.
+
+```{r toy-paths}
+paths <- mirBottleneck:::.toy_paths()
+str(paths)
+```
+
+```{r load-toy}
+mirna_log      <- readRDS(paths$mirna_log)       # 30 miRNAs x 10 patients
+rna_sym        <- readRDS(paths$rna_sym)          # 50 genes  x 10 patients
+clinical_df    <- readRDS(paths$clinical_df)      # 10 patients x 9 cols
+mirna_norm_map <- readRDS(paths$mirna_norm_map)   # 30-row map
+mirna_targets  <- readRDS(paths$mirna_targets)    # precomputed toy network
+
+cat("miRNA matrix :", nrow(mirna_log), "miRNAs x", ncol(mirna_log), "patients\n")
+cat("RNA matrix   :", nrow(rna_sym),   "genes  x", ncol(rna_sym),   "patients\n")
+cat("Clinical     :", nrow(clinical_df), "patients,", ncol(clinical_df), "variables\n")
+```
+
+```{r show-clinical}
+head(clinical_df)
+```
+
+# Step 1 — miRNA–target network
+
+In a real analysis, `build_network()` queries miRTarBase via `multiMiR` to
+fetch validated interactions. Here we use the **precomputed toy network** so
+the vignette runs offline and deterministically.
+
+```{r show-network}
+head(mirna_targets[, c("mirna", "n_targets")])
+```
+
+```{r build-network-real, eval=FALSE}
+# Real usage (requires internet + multiMiR):
+mirna_targets <- build_network(
+  mirna_ids   = rownames(mirna_log),
+  rna_symbols = rownames(rna_sym)
+)
+```
+
+# Step 2 — Variance Suppression Score (VSS)
+
+For each miRNA, `score_vss()` fits a linear model of each validated target
+gene on the miRNA expression across patients. VSS = mean R² across all targets.
+
+```{r score-vss}
+vss_scores <- score_vss(
+  mirna_log      = mirna_log,
+  rna_sym        = rna_sym,
+  mirna_targets  = mirna_targets,
+  mirna_norm_map = mirna_norm_map
+)
+
+head(vss_scores)
+```
+
+```{r vss-plot, fig.cap="VSS distribution across toy miRNAs"}
+hist(
+  vss_scores$vss,
+  breaks = 10,
+  main   = "Variance Suppression Score distribution",
+  xlab   = "VSS (mean R² across validated targets)",
+  col    = "#4C72B0",
+  border = "white"
+)
+```
+
+# Step 3 — Coherence Induction Score
+
+`score_coherence()` splits patients by median miRNA expression and measures
+whether target genes become more correlated in the high-expression group.
+An empirical p-value is computed via permutation.
+
+```{r score-coherence}
+coherence_scores <- score_coherence(
+  mirna_log      = mirna_log,
+  rna_sym        = rna_sym,
+  mirna_targets  = mirna_targets,
+  mirna_norm_map = mirna_norm_map,
+  scored_mirnas  = vss_scores$mirna,
+  n_perm         = 50,      # low for vignette speed; use 200+ in real analysis
+  max_targets    = 50
+)
+
+head(coherence_scores)
+```
+
+```{r coherence-plot, fig.cap="Coherence score vs. VSS for toy miRNAs"}
+merged <- merge(vss_scores, coherence_scores, by = "mirna")
+plot(
+  merged$vss, merged$coherence_score,
+  xlab = "Variance Suppression Score (VSS)",
+  ylab = "Coherence Induction Score",
+  main = "VSS vs. Coherence — toy dataset",
+  pch  = 19,
+  col  = "#4C72B0"
+)
+abline(v   = median(merged$vss),             lty = 2, col = "grey50")
+abline(h   = median(merged$coherence_score), lty = 2, col = "grey50")
+legend("topright",
+       legend = c("median splits"),
+       lty = 2, col = "grey50", bty = "n")
+```
+
+# Step 4 — Classification
+
+`classify_bottleneck()` normalises both scores to [0, 1], computes a composite
+bottleneck index, and assigns each miRNA to one of four archetypes based on
+median splits of the normalized scores.
+
+| Class | VSS | Coherence |
+|---|---|---|
+| **dual** | ≥ median | ≥ median |
+| **silencer** | ≥ median | < median |
+| **conductor** | < median | ≥ median |
+| **weak** | < median | < median |
+
+```{r classify}
+classified <- classify_bottleneck(vss_scores, coherence_scores)
+
+table(classified$class)
+```
+
+```{r classify-plot, fig.cap="miRNA classification by bottleneck archetype"}
+class_cols <- c(
+  dual      = "#D55E00",
+  silencer  = "#0072B2",
+  conductor = "#009E73",
+  weak      = "#999999"
+)
+barplot(
+  table(classified$class),
+  col    = class_cols[names(table(classified$class))],
+  main   = "miRNA bottleneck class distribution",
+  ylab   = "Number of miRNAs",
+  border = "white"
+)
+```
+
+# Step 5 — Patient-level composite score
+
+`composite_score()` builds a direction-aware weighted score per patient from
+the miRNAs most associated with survival (nominally p < threshold). Weights
+are |Cox coefficient|; miRNAs with HR > 1 push the score up.
+
+```{r composite}
+composite <- composite_score(
+  mirna_log       = mirna_log,
+  classified_df   = classified,
+  clinical_df     = clinical_df,
+  mirna_norm_map  = mirna_norm_map,
+  cox_p_threshold = 0.5    # relaxed for toy (only 10 patients)
+)
+
+cat("Patients scored:", length(composite$patient_scores), "\n")
+cat("Contributing miRNAs:", nrow(composite$contributing_mirnas), "\n")
+```
+
+```{r composite-plot, fig.cap="Patient composite bottleneck score distribution"}
+scores <- composite$patient_scores
+barplot(
+  sort(scores),
+  main   = "Patient composite bottleneck scores",
+  ylab   = "Score",
+  col    = ifelse(sort(scores) >= median(scores), "#D55E00", "#0072B2"),
+  border = "white",
+  las    = 2,
+  cex.names = 0.7
+)
+abline(h = median(scores), lty = 2, col = "grey40")
+legend("topleft",
+       legend = c("High", "Low"),
+       fill   = c("#D55E00", "#0072B2"),
+       bty    = "n")
+```
+
+# Step 6 — Survival analysis
+
+`survival_model()` fits three Cox models (score alone, clinical alone,
+combined) and a log-rank test comparing High vs. Low score groups.
+
+> **Note:** With only 10 toy patients, survival statistics are not
+> interpretable — this step is shown for API demonstration only.
+> See the [full dataset section](#full-dataset) for a real analysis.
+
+```{r survival}
+surv <- survival_model(
+  patient_scores = composite$patient_scores,
+  clinical_df    = clinical_df
+)
+
+cat("Log-rank p-value :", round(surv$logrank_p, 4), "\n")
+cat("C-index (score)  :", round(surv$summary["c_score"],    4), "\n")
+cat("C-index (combined):", round(surv$summary["c_combined"], 4), "\n")
+```
+
+# One-step pipeline with `run_mirBottleneck_project()`
+
+All six steps above are wrapped in a single convenience function. Supply paths
+to `.rds` files and an output directory:
+
+```{r pipeline-toy, eval=FALSE}
+paths <- mirBottleneck:::.toy_paths()
+out   <- file.path(tempdir(), "mirBottleneck_toy_run")
+
+results <- run_mirBottleneck_project(
+  mirna_log_rds      = paths$mirna_log,
+  rna_rds            = paths$rna_sym,
+  clinical_rds       = paths$clinical_df,
+  mirna_norm_map_rds = paths$mirna_norm_map,
+  mirna_targets_rds  = paths$mirna_targets,  # offline: skip network query
+  query_network      = FALSE,
+  out_dir            = out,
+  n_perm             = 50,
+  cox_p_threshold    = 0.5
+)
+
+list.files(out)
+```
+
+# Full TCGA-PAAD dataset {#full-dataset}
+
+The complete harmonized TCGA-PAAD dataset (~51 MB, 178 patients, 60,660 genes,
+1,881 miRNAs) is archived on Zenodo:
+
+**DOI:** https://doi.org/10.5281/zenodo.19121116
+
+```{r fetch-full, eval=FALSE}
+# Download once — cached to tools::R_user_dir("mirBottleneck", "cache")
+paths_full <- fetch_mirBottleneck_data()
+
+results_full <- run_mirBottleneck_project(
+  mirna_log_rds      = paths_full[["mirna_log"]],
+  rna_rds            = paths_full[["rna_final"]],
+  clinical_rds       = paths_full[["clinical"]],
+  mirna_norm_map_rds = paths_full[["mirna_norm_map"]],
+  query_network      = TRUE,   # builds network from miRTarBase
+  out_dir            = "mirBottleneck_results/"
+)
+```
+
+# Session info
+
+```{r session}
+sessionInfo()
+```

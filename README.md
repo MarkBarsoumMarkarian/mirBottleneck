@@ -1,5 +1,7 @@
 # mirBottleneck
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19121116.svg)](https://doi.org/10.5281/zenodo.19121116)
+
 > **miRNA Bottleneck Scoring for Pancreatic Cancer Survival Prediction**  
 > Mark Barsoum Markarian · American University of Beirut · mb.markarian@aub.edu.lb
 
@@ -163,6 +165,22 @@ If you use this code or data, please cite:
 > Markarian, M.B. (2026). *mirBottleneck: miRNA Bottleneck Scoring for Pancreatic Cancer Survival Prediction*. GitHub. https://github.com/MarkBarsoumMarkarian/mirBottleneck
 
 ---
+
+
+---
+
+## Full Dataset (Zenodo)
+
+The complete harmonized TCGA-PAAD dataset (~51 MB) is archived on Zenodo:
+
+**DOI:** https://doi.org/10.5281/zenodo.19121116
+
+Download directly from R (cached locally, never required for package checks):
+
+```r
+paths <- fetch_mirBottleneck_data()
+rna   <- readRDS(paths[["rna_log"]])   # 60,660 genes x 178 patients
+```
 
 ## License
 
