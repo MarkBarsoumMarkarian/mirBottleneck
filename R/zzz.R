@@ -1,3 +1,5 @@
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("mirBottleneck loaded. By Mark")
+  if (interactive()) {
+    packageStartupMessage("mirBottleneck loaded. By Mark")
+  }
 }
