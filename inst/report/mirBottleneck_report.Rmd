@@ -279,7 +279,12 @@ layout(
 
 ```{r cox-table}
 cc <- as.data.frame(summary(cox_final)$coefficients)
-cc$Variable <- c("Composite Score","Age","Stage II","Stage III","Stage IV")
+raw_vars <- rownames(cc)
+var_labels <- raw_vars
+var_labels[var_labels == "composite"]      <- "Composite Score"
+var_labels[var_labels == "age"]            <- "Age"
+var_labels[grepl("stage", var_labels)]     <- paste0("Stage ", gsub("stage_clean","", var_labels[grepl("stage", var_labels)]))
+cc$Variable <- var_labels
 cc <- cc[, c("Variable","exp(coef)","se(coef)","z","Pr(>|z|)")]
 colnames(cc) <- c("Variable","HR","SE","z","p-value")
 cc$HR <- round(cc$HR,3); cc$SE <- round(cc$SE,4)
