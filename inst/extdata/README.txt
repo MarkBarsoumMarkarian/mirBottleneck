@@ -31,7 +31,7 @@ survival_composite.rds  Composite survival analysis results
 FULL DATASET (not in package — too large)
 ------------------------------------------
 The full TCGA-PAAD harmonized dataset (~51 MB) is available on Zenodo:
-[DOI to be added after upload]
+https://doi.org/10.5281/zenodo.19121116
 
 Download with:
-  mirBottleneck::fetch_mirBottleneck_data(dest = "path/to/dir")
+  mirBottleneck::fetch_mirBottleneck_data()  # caches to tools::R_user_dir()
