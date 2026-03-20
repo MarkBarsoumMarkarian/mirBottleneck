@@ -3,10 +3,9 @@ title: "mirBottleneck: miRNA Bottleneck Scoring Workflow"
 author: "Mark Barsoum Markarian"
 date: "`r Sys.Date()`"
 output:
-  BiocStyle::html_document:
+  rmarkdown::html_vignette:
     toc: true
     toc_depth: 3
-    number_sections: true
 vignette: >
   %\VignetteIndexEntry{mirBottleneck: miRNA Bottleneck Scoring Workflow}
   %\VignetteEngine{knitr::rmarkdown}
