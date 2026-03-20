@@ -8,7 +8,7 @@
 - Planned: `pkgdown` documentation site
 - Planned: GitHub Actions CI workflow running tests against demo data
 
-## [v0.1.0] - 2026-03-20
+## [v0.99.0] - 2026-03-20
 
 ### Initial release
 - `build_network()` — miRNA-target network via miRTarBase/multiMiR
