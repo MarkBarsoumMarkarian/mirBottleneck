@@ -6,7 +6,7 @@
 
 **miRNA Bottleneck Scoring for Pancreatic Cancer Survival Prediction**
 
-Mark Barsoum Markarian · American University of Beirut · mb.markarian@aub.edu.lb
+Mark Barsoum Markarian · American University of Beirut · mkm25@mail.aub.edu
 
 ---
 
@@ -51,7 +51,7 @@ results <- run_mirBottleneck_project(
 # Self-contained, fully offline, opens in any browser
 ```
 
-The HTML report includes the phase diagram, survival curves, sortable miRNA table, per-patient scores, and Cox model results. No Shiny, no server, no cost.
+The HTML report includes the phase diagram, survival curves, sortable miRNA table, per-patient scores, and Cox model results.
 
 ---
 
