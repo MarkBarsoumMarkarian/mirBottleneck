@@ -22,9 +22,7 @@
 #' @return Invisibly returns the path to the generated HTML file.
 #'
 #' @examples
-#' if (requireNamespace("plotly", quietly = TRUE) &&
-#'     requireNamespace("DT", quietly = TRUE) &&
-#'     requireNamespace("rmarkdown", quietly = TRUE)) {
+#' \donttest{
 #'   paths   <- mirBottleneck:::.toy_paths()
 #'   results <- run_mirBottleneck_project(
 #'     mirna_log_rds      = paths$mirna_log,

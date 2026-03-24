@@ -31,62 +31,17 @@
 #' @return Invisible list of key objects.
 #' @export
 #' @examples
-#' set.seed(1)
-#' n_pat <- 12
-#' pat_ids <- paste0("P", 1:n_pat)
-#'
-#' mirna_log <- matrix(rnorm(4 * n_pat), nrow = 4)
-#' rownames(mirna_log) <- c("hsa-miR-21-5p", "hsa-miR-155-5p", "hsa-miR-1-3p", "hsa-miR-2-3p")
-#' colnames(mirna_log) <- pat_ids
-#'
-#' rna_sym <- matrix(rnorm(6 * n_pat), nrow = 6)
-#' rownames(rna_sym) <- c("KRAS", "TP53", "SMAD4", "CDKN2A", "EGFR", "BRCA1")
-#' colnames(rna_sym) <- pat_ids
-#'
-#' clinical_df <- data.frame(
-#'   patient     = pat_ids,
-#'   OS_days     = round(rexp(n_pat, rate = 0.001)),
-#'   OS_status   = sample(0:1, n_pat, replace = TRUE),
-#'   age         = sample(45:75, n_pat, replace = TRUE),
-#'   stage_clean = sample(c("I", "II", "III"), n_pat, replace = TRUE)
-#' )
-#'
-#' mirna_norm_map <- data.frame(
-#'   original = rownames(mirna_log),
-#'   norm = rownames(mirna_log)
-#' )
-#'
-#' mirna_targets <- data.frame(
-#'   mirna = c("hsa-miR-21-5p", "hsa-miR-155-5p"),
-#'   targets = I(list(c("KRAS", "TP53"), c("EGFR", "BRCA1"))),
-#'   n_targets = c(2L, 2L)
-#' )
-#'
-#' tmp <- tempfile("mirBottleneck_")
-#' dir.create(tmp)
-#' mirna_log_rds <- file.path(tmp, "mirna_log.rds")
-#' rna_rds <- file.path(tmp, "rna_sym.rds")
-#' clinical_rds <- file.path(tmp, "clinical.rds")
-#' mirna_norm_map_rds <- file.path(tmp, "mirna_norm_map.rds")
-#' mirna_targets_rds <- file.path(tmp, "mirna_targets.rds")
-#'
-#' saveRDS(mirna_log, mirna_log_rds)
-#' saveRDS(rna_sym, rna_rds)
-#' saveRDS(clinical_df, clinical_rds)
-#' saveRDS(mirna_norm_map, mirna_norm_map_rds)
-#' saveRDS(mirna_targets, mirna_targets_rds)
-#'
+#' paths <- mirBottleneck:::.toy_paths()
 #' run_mirBottleneck_project(
-#'   mirna_log_rds = mirna_log_rds,
-#'   rna_rds = rna_rds,
-#'   clinical_rds = clinical_rds,
-#'   mirna_norm_map_rds = mirna_norm_map_rds,
-#'   out_dir = tmp,
-#'   mirna_targets_rds = mirna_targets_rds,
-#'   query_network = FALSE,
-#'   n_perm = 5,
-#'   max_targets = 10,
-#'   report = FALSE
+#'   mirna_log_rds      = paths$mirna_log,
+#'   rna_rds            = paths$rna_sym,
+#'   clinical_rds       = paths$clinical_df,
+#'   mirna_norm_map_rds = paths$mirna_norm_map,
+#'   mirna_targets_rds  = paths$mirna_targets,
+#'   query_network      = FALSE,
+#'   out_dir            = tempdir(),
+#'   cox_p_threshold    = 0.5,
+#'   report             = FALSE
 #' )
 run_mirBottleneck_project <- function(
   mirna_log_rds,
