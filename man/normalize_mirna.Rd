@@ -17,6 +17,5 @@ Converts mature miRNA IDs (hsa-miR-21-5p) to lowercase precursor format
 (hsa-mir-21) by lowercasing and stripping arm suffixes.
 }
 \examples{
-normalize_mirna(c("hsa-miR-21-5p", "hsa-miR-21-3p"))
-}
-\keyword{internal}
+mirBottleneck:::normalize_mirna(c("hsa-miR-21-5p", "hsa-miR-21-3p"))
+}\keyword{internal}

@@ -17,6 +17,6 @@ zero-variance input, and all-NA for non-finite input.
 Normalize a numeric vector to 0-1 range
 }
 \examples{
-normalize_01(c(10, 20, 30))
+mirBottleneck:::normalize_01(c(10, 20, 30))
 }
 \keyword{internal}
