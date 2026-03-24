@@ -29,10 +29,4 @@ This function is optional and is never called during package checks or tests.
   dim(rna)
 }
 }
-\examples{
-\donttest{
-  paths <- fetch_mirBottleneck_data()
-  rna   <- readRDS(paths[["rna_log"]])
-  dim(rna)
-}
-}
+
