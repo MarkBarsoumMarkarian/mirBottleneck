@@ -10,3 +10,6 @@ data/raw/
 # OS
 .DS_Store
 Thumbs.db
+
+# BiocCheck output
+mirBottleneck.BiocCheck/
