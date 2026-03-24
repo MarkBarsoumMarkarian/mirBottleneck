@@ -22,24 +22,19 @@
 #' @return Invisibly returns the path to the generated HTML file.
 #'
 #' @examples
-#' \donttest{
-#'   if (requireNamespace("plotly",    quietly = TRUE) &&
-#'       requireNamespace("DT",        quietly = TRUE) &&
-#'       requireNamespace("scales",    quietly = TRUE) &&
-#'       requireNamespace("rmarkdown", quietly = TRUE)) {
-#'     paths   <- mirBottleneck:::.toy_paths()
-#'     results <- run_mirBottleneck_project(
-#'       mirna_log_rds      = paths$mirna_log,
-#'       rna_rds            = paths$rna_sym,
-#'       clinical_rds       = paths$clinical_df,
-#'       mirna_norm_map_rds = paths$mirna_norm_map,
-#'       mirna_targets_rds  = paths$mirna_targets,
-#'       query_network      = FALSE,
-#'       out_dir            = tempdir(),
-#'       cox_p_threshold    = 0.5
-#'     )
-#'     generate_report(results, out_dir = tempdir(), open = FALSE)
-#'   }
+#' \dontrun{
+#'   paths   <- mirBottleneck:::.toy_paths()
+#'   results <- run_mirBottleneck_project(
+#'     mirna_log_rds      = paths$mirna_log,
+#'     rna_rds            = paths$rna_sym,
+#'     clinical_rds       = paths$clinical_df,
+#'     mirna_norm_map_rds = paths$mirna_norm_map,
+#'     mirna_targets_rds  = paths$mirna_targets,
+#'     query_network      = FALSE,
+#'     out_dir            = tempdir(),
+#'     cox_p_threshold    = 0.5
+#'   )
+#'   generate_report(results, out_dir = tempdir(), open = FALSE)
 #' }
 #'
 #' @export
