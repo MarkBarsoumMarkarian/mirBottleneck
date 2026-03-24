@@ -10,6 +10,18 @@
 #' @param norm_ids Character vector of normalized IDs, parallel to rownames(mirna_log).
 #' @param mirna_norm_map Data frame with columns \code{original} and \code{norm}.
 #' @return Named list of numeric vectors (one per unique normalized miRNA).
+#' @examples
+#' set.seed(1)
+#' mirna_log <- matrix(rnorm(12), nrow = 3,
+#'   dimnames = list(c("hsa-mir-1","hsa-mir-2","hsa-mir-3"), paste0("P", 1:4))
+#' )
+#' mirna_norm_map <- data.frame(
+#'   original = rownames(mirna_log),
+#'   norm = rownames(mirna_log),
+#'   stringsAsFactors = FALSE
+#' )
+#' x <- .build_mirna_expr(mirna_log, norm_ids = rownames(mirna_log), mirna_norm_map = mirna_norm_map)
+#' names(x)
 #' @keywords internal
 .build_mirna_expr <- function(mirna_log, norm_ids, mirna_norm_map) {
 
@@ -43,6 +55,23 @@
 #' @param mirna_norm_map Data frame with columns \code{original} and \code{norm}.
 #' @param patients Optional character vector of patient IDs to subset columns.
 #' @return Numeric matrix (unique miRNAs x patients).
+#' @examples
+#' set.seed(1)
+#' mirna_log <- matrix(rnorm(12), nrow = 3,
+#'   dimnames = list(c("hsa-mir-1","hsa-mir-2","hsa-mir-3"), paste0("P", 1:4))
+#' )
+#' mirna_norm_map <- data.frame(
+#'   original = rownames(mirna_log),
+#'   norm = rownames(mirna_log),
+#'   stringsAsFactors = FALSE
+#' )
+#' mat <- .build_mirna_expr_mat(
+#'   mirna_log,
+#'   norm_ids = rownames(mirna_log),
+#'   mirna_norm_map = mirna_norm_map,
+#'   patients = colnames(mirna_log)
+#' )
+#' dim(mat)
 #' @keywords internal
 .build_mirna_expr_mat <- function(mirna_log, norm_ids, mirna_norm_map,
                                   patients = NULL) {
