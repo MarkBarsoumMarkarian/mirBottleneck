@@ -22,7 +22,6 @@
 #' @return Invisibly returns the path to the generated HTML file.
 #'
 #' @examples
-#' \dontrun{
 #'   paths   <- mirBottleneck:::.toy_paths()
 #'   results <- run_mirBottleneck_project(
 #'     mirna_log_rds      = paths$mirna_log,
@@ -35,7 +34,6 @@
 #'     cox_p_threshold    = 0.5
 #'   )
 #'   generate_report(results, out_dir = tempdir(), open = FALSE)
-#' }
 #'
 #' @export
 generate_report <- function(results,

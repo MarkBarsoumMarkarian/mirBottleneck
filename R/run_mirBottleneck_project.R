@@ -28,6 +28,59 @@
 #'
 #' @return Invisible list of key objects.
 #' @export
+#' @examples
+#' set.seed(1)
+#' mirna_log <- matrix(rnorm(4 * 8), nrow = 4)
+#' rownames(mirna_log) <- c("hsa-miR-21-5p", "hsa-miR-155-5p", "hsa-miR-1-3p", "hsa-miR-2-3p")
+#' colnames(mirna_log) <- paste0("P", 1:8)
+#'
+#' rna_sym <- matrix(rnorm(6 * 8), nrow = 6)
+#' rownames(rna_sym) <- c("KRAS", "TP53", "SMAD4", "CDKN2A", "EGFR", "BRCA1")
+#' colnames(rna_sym) <- paste0("P", 1:8)
+#'
+#' clinical_df <- data.frame(
+#'   barcode = paste0("P", 1:8),
+#'   OS.time = rexp(8, rate = 0.1),
+#'   OS = sample(0:1, 8, replace = TRUE)
+#' )
+#'
+#' mirna_norm_map <- data.frame(
+#'   original = rownames(mirna_log),
+#'   norm = rownames(mirna_log)
+#' )
+#'
+#' mirna_targets <- data.frame(
+#'   mirna = c("hsa-miR-21-5p", "hsa-miR-155-5p"),
+#'   targets = I(list(c("KRAS", "TP53"), c("EGFR", "BRCA1"))),
+#'   n_targets = c(2L, 2L)
+#' )
+#'
+#' tmp <- tempfile("mirBottleneck_")
+#' dir.create(tmp)
+#' mirna_log_rds <- file.path(tmp, "mirna_log.rds")
+#' rna_rds <- file.path(tmp, "rna_sym.rds")
+#' clinical_rds <- file.path(tmp, "clinical.rds")
+#' mirna_norm_map_rds <- file.path(tmp, "mirna_norm_map.rds")
+#' mirna_targets_rds <- file.path(tmp, "mirna_targets.rds")
+#'
+#' saveRDS(mirna_log, mirna_log_rds)
+#' saveRDS(rna_sym, rna_rds)
+#' saveRDS(clinical_df, clinical_rds)
+#' saveRDS(mirna_norm_map, mirna_norm_map_rds)
+#' saveRDS(mirna_targets, mirna_targets_rds)
+#'
+#' run_mirBottleneck_project(
+#'   mirna_log_rds = mirna_log_rds,
+#'   rna_rds = rna_rds,
+#'   clinical_rds = clinical_rds,
+#'   mirna_norm_map_rds = mirna_norm_map_rds,
+#'   out_dir = tmp,
+#'   mirna_targets_rds = mirna_targets_rds,
+#'   query_network = FALSE,
+#'   n_perm = 5,
+#'   max_targets = 10,
+#'   report = FALSE
+#' )
 run_mirBottleneck_project <- function(
   mirna_log_rds,
   rna_rds,

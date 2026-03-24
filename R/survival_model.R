@@ -18,6 +18,23 @@
 #' @export
 #' @importFrom survival coxph Surv survfit survdiff
 #' @importFrom stats pchisq
+#' @examples
+#' set.seed(1)
+#' # patient_scores must be a *named numeric vector*
+#' patient_scores <- rnorm(20)
+#' names(patient_scores) <- paste0("P", 1:20)
+#'
+#' # clinical_df must contain: patient, OS_days, OS_status, age, stage_clean
+#' clinical_df <- data.frame(
+#'   patient = paste0("P", 1:20),
+#'   OS_days = as.numeric(rexp(20, rate = 0.1) * 365),
+#'   OS_status = sample(0:1, 20, replace = TRUE),
+#'   age = sample(40:80, 20, replace = TRUE),
+#'   stage_clean = sample(c("I", "II", "III", "IV"), 20, replace = TRUE)
+#' )
+#'
+#' res <- survival_model(patient_scores, clinical_df)
+#' names(res)
 survival_model <- function(patient_scores, clinical_df) {
 
   surv_df <- clinical_df

@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [main, v0.2-tooling]
+    branches: [main, v0.2-tooling, add-runnable-examples]
   pull_request:
     branches: [main]
 
@@ -17,11 +17,19 @@ jobs:
         with:
           use-public-rspm: true
 
+      - uses: r-lib/actions/setup-bioc@v2
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck, BiocManager
           needs: check
+
+      - name: Install Bioconductor dependencies
+        run: |
+          BiocManager::install(c("BiocStyle", "multiMiR"), ask = FALSE, update = FALSE)
+        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+          args: 'c("--no-manual", "--as-cran")'

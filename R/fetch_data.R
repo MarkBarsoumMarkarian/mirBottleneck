@@ -31,11 +31,9 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #'   paths <- fetch_mirBottleneck_data()
 #'   rna   <- readRDS(paths[["rna_log"]])
 #'   dim(rna)  # 60660 x 178
-#' }
 #'
 #' @export
 fetch_mirBottleneck_data <- function(dest      = tools::R_user_dir("mirBottleneck", "cache"),

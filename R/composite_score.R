@@ -22,6 +22,37 @@
 #' @export
 #' @importFrom survival coxph Surv
 #' @importFrom dplyr filter mutate arrange
+#' @examples
+#' set.seed(1)
+#' mirna_log <- matrix(rnorm(4 * 10), nrow = 4)
+#' rownames(mirna_log) <- c("hsa-miR-21-5p", "hsa-miR-155-5p", "hsa-miR-1-3p", "hsa-miR-2-3p")
+#' colnames(mirna_log) <- paste0("P", 1:10)
+#'
+#' classified_df <- data.frame(
+#'   mirna = c("hsa-miR-21-5p", "hsa-miR-155-5p"),
+#'   vss = c(0.9, 0.4),
+#'   coherence = c(0.8, 0.3),
+#'   class = c("bottleneck", "non_bottleneck")
+#' )
+#'
+#' clinical_df <- data.frame(
+#'   barcode = paste0("P", 1:10),
+#'   OS.time = rexp(10, rate = 0.1),
+#'   OS = sample(0:1, 10, replace = TRUE)
+#' )
+#'
+#' mirna_norm_map <- data.frame(
+#'   original = rownames(mirna_log),
+#'   norm = rownames(mirna_log)
+#' )
+#'
+#' composite_score(
+#'   mirna_log = mirna_log,
+#'   classified_df = classified_df,
+#'   clinical_df = clinical_df,
+#'   mirna_norm_map = mirna_norm_map,
+#'   cox_p_threshold = 0.15
+#' )
 composite_score <- function(mirna_log, classified_df, clinical_df,
                             mirna_norm_map, cox_p_threshold = 0.15) {
 
