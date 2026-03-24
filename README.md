@@ -3,7 +3,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19121116.svg)](https://doi.org/10.5281/zenodo.19121116)
 
 > **miRNA Bottleneck Scoring for Pancreatic Cancer Survival Prediction**  
-> Mark Barsoum Markarian · American University of Beirut · mb.markarian@aub.edu.lb
+> Mark Barsoum Markarian · American University of Beirut · mkm25@mail.aub.edu
 
 ---
 
