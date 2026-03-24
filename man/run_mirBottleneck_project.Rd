@@ -48,3 +48,21 @@ saved as RDS files to \code{out_dir}.
 End-to-end wrapper that runs network construction, VSS scoring, coherence scoring,
 miRNA classification, patient-level composite score, and survival modelling in sequence.
 }
+\examples{
+\donttest{
+  paths <- mirBottleneck:::.toy_paths()
+  res <- run_mirBottleneck_project(
+    mirna_log_rds      = paths$mirna_log,
+    rna_rds            = paths$rna_sym,
+    clinical_rds       = paths$clinical_df,
+    mirna_norm_map_rds = paths$mirna_norm_map,
+    mirna_targets_rds  = paths$mirna_targets,
+    query_network      = FALSE,
+    out_dir            = tempdir(),
+    n_perm             = 10,
+    cox_p_threshold    = 1,
+    report             = FALSE
+  )
+  names(res)
+}
+}
