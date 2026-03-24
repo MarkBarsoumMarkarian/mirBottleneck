@@ -32,7 +32,7 @@ normalize_mirna <- function(x) {
 #' Normalize a numeric vector to 0-1 range
 #'
 #' @param x Numeric vector
-#' @return Numeric vector scaled to the 0-1 range; returns all-zero for
+#' @return Numeric vector scaled to the 0-1 range; returns all-zero for zero-variance
 #'   zero-variance input, and all-NA for non-finite input.
 #' @examples
 #' normalize_01(c(10, 20, 30))
