@@ -24,7 +24,7 @@ vss_scores <- data.frame(
 )
 coherence_scores <- data.frame(
   mirna = c("hsa-miR-21-5p", "hsa-miR-155-5p", "hsa-miR-1-3p"),
-  coherence = c(0.8, 0.3, 0.2)
+  coherence_score = c(0.8, 0.3, 0.2)
 )
 classify_bottleneck(vss_scores, coherence_scores)
 }

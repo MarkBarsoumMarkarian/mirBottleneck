@@ -52,7 +52,11 @@ as returned by \code{build_network()} (columns: mirna, targets(list), n_targets)
 
 \item{max_targets}{Passed to \code{score_coherence()}}
 
-\item{cox_p_threshold}{Passed to \code{composite_score()}}
+\item{cox_p_threshold}{p-value threshold for composite_score().}
+
+\item{report}{Logical. If TRUE, generate an HTML report.}
+
+\item{cohort_name}{Character label used in the HTML report.}
 }
 \value{
 Invisible list of key objects.
