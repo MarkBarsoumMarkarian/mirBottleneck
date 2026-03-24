@@ -42,6 +42,9 @@ The report is fully offline — no server, no Shiny, no external calls.
 It opens in any browser and can be shared as a single ~3MB HTML file.
 }
 \examples{
+if (requireNamespace("plotly", quietly = TRUE) &&
+    requireNamespace("DT", quietly = TRUE) &&
+    requireNamespace("rmarkdown", quietly = TRUE)) {
   paths   <- mirBottleneck:::.toy_paths()
   results <- run_mirBottleneck_project(
     mirna_log_rds      = paths$mirna_log,
@@ -54,5 +57,5 @@ It opens in any browser and can be shared as a single ~3MB HTML file.
     cox_p_threshold    = 0.5
   )
   generate_report(results, out_dir = tempdir(), open = FALSE)
-
+}
 }

@@ -18,6 +18,6 @@ Compute mean pairwise correlation of a matrix
 \examples{
 set.seed(1)
 mat <- matrix(rnorm(30), nrow = 5)
-mean_pairwise_cor(mat)
+mirBottleneck:::mean_pairwise_cor(mat)
 }
 \keyword{internal}
