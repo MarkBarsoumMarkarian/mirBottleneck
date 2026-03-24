@@ -55,7 +55,7 @@ normalize_01 <- function(x) {
 #' @examples
 #' set.seed(1)
 #' mat <- matrix(rnorm(30), nrow = 5)
-#' mean_pairwise_cor(mat)
+#' mirBottleneck:::mean_pairwise_cor(mat)
 #' @keywords internal
 mean_pairwise_cor <- function(mat) {
   if (is.null(mat) || nrow(mat) < 2 || ncol(mat) < 2) return(NA)
