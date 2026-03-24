@@ -26,3 +26,14 @@ Retrieves validated miRNA-target interactions from miRTarBase via multiMiR,
 filters to targets present in the RNA-seq dataset, and returns a target list
 per miRNA. Queries are batched to avoid server timeouts.
 }
+
+\examples{
+\donttest{
+  if (requireNamespace("multiMiR", quietly = TRUE)) {
+    mirna_ids   <- c("hsa-mir-21", "hsa-mir-155")
+    rna_symbols <- c("PTEN", "BCL2", "TP53", "KRAS")
+    net <- build_network(mirna_ids, rna_symbols, batch_size = 2, min_targets = 1)
+    head(net)
+  }
+}
+}
