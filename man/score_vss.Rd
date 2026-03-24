@@ -20,3 +20,29 @@ the miRNA's expression across patients. The VSS is the mean R-squared
 across all validated targets, quantifying how much transcriptome variance
 the miRNA explains.
 }
+\examples{
+set.seed(1)
+
+mirnas <- c("hsa-mir-1", "hsa-mir-2")
+patients <- paste0("P", 1:8)
+genes <- c("G1", "G2", "G3", "G4")
+
+mirna_log <- matrix(rnorm(length(mirnas) * length(patients)),
+                    nrow = length(mirnas),
+                    dimnames = list(mirnas, patients))
+
+rna_sym <- matrix(rnorm(length(genes) * length(patients)),
+                  nrow = length(genes),
+                  dimnames = list(genes, patients))
+
+mirna_targets <- data.frame(
+  mirna = mirnas,
+  targets = I(list(c("G1", "G2"), c("G3", "G4"))),
+  n_targets = c(2, 2)
+)
+
+mirna_norm_map <- data.frame(original = mirnas, norm = mirnas)
+
+vss <- score_vss(mirna_log, rna_sym, mirna_targets, mirna_norm_map)
+vss
+}
