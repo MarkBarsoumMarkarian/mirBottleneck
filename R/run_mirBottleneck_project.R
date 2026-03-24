@@ -32,18 +32,23 @@
 #' @export
 #' @examples
 #' set.seed(1)
-#' mirna_log <- matrix(rnorm(4 * 8), nrow = 4)
-#' rownames(mirna_log) <- c("hsa-miR-21-5p", "hsa-miR-155-5p", "hsa-miR-1-3p", "hsa-miR-2-3p")
-#' colnames(mirna_log) <- paste0("P", 1:8)
+#' n_pat <- 12
+#' pat_ids <- paste0("P", 1:n_pat)
 #'
-#' rna_sym <- matrix(rnorm(6 * 8), nrow = 6)
+#' mirna_log <- matrix(rnorm(4 * n_pat), nrow = 4)
+#' rownames(mirna_log) <- c("hsa-miR-21-5p", "hsa-miR-155-5p", "hsa-miR-1-3p", "hsa-miR-2-3p")
+#' colnames(mirna_log) <- pat_ids
+#'
+#' rna_sym <- matrix(rnorm(6 * n_pat), nrow = 6)
 #' rownames(rna_sym) <- c("KRAS", "TP53", "SMAD4", "CDKN2A", "EGFR", "BRCA1")
-#' colnames(rna_sym) <- paste0("P", 1:8)
+#' colnames(rna_sym) <- pat_ids
 #'
 #' clinical_df <- data.frame(
-#'   barcode = paste0("P", 1:8),
-#'   OS.time = rexp(8, rate = 0.1),
-#'   OS = sample(0:1, 8, replace = TRUE)
+#'   patient     = pat_ids,
+#'   OS_days     = round(rexp(n_pat, rate = 0.001)),
+#'   OS_status   = sample(0:1, n_pat, replace = TRUE),
+#'   age         = sample(45:75, n_pat, replace = TRUE),
+#'   stage_clean = sample(c("I", "II", "III"), n_pat, replace = TRUE)
 #' )
 #'
 #' mirna_norm_map <- data.frame(
