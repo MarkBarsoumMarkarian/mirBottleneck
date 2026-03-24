@@ -1,7 +1,7 @@
 Package: mirBottleneck
 Title: miRNA Bottleneck Scoring for Cancer Survival Prediction
 Version: 0.99.0
-Authors@R: person("Mark Barsoum Markarian",
+Authors@R: person("Mark Barsoum", "Markarian")
     email = "mkm25@mail.aub.edu",
     role = c("aut", "cre"))
 Description: Identifies miRNAs acting as transcriptome stabilizers in cancer
