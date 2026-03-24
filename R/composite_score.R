@@ -23,22 +23,29 @@
 #' @importFrom survival coxph Surv
 #' @importFrom dplyr filter mutate arrange
 #' @examples
-#' set.seed(1)
-#' mirna_log <- matrix(rnorm(4 * 10), nrow = 4)
-#' rownames(mirna_log) <- c("hsa-miR-21-5p", "hsa-miR-155-5p", "hsa-miR-1-3p", "hsa-miR-2-3p")
-#' colnames(mirna_log) <- paste0("P", 1:10)
+#' \donttest{
+#' set.seed(42)
+#' n_patients <- 40
+#' mirna_log <- matrix(rnorm(4 * n_patients), nrow = 4)
+#' rownames(mirna_log) <- c("hsa-miR-21-5p", "hsa-miR-155-5p",
+#'                          "hsa-miR-1-3p", "hsa-miR-2-3p")
+#' colnames(mirna_log) <- paste0("P", seq_len(n_patients))
 #'
 #' classified_df <- data.frame(
-#'   mirna = c("hsa-miR-21-5p", "hsa-miR-155-5p"),
-#'   vss = c(0.9, 0.4),
-#'   coherence = c(0.8, 0.3),
-#'   class = c("bottleneck", "non_bottleneck")
+#'   mirna = c("hsa-miR-21-5p", "hsa-miR-155-5p",
+#'             "hsa-miR-1-3p", "hsa-miR-2-3p"),
+#'   vss = c(0.9, 0.4, 0.6, 0.2),
+#'   coherence_score = c(0.8, 0.3, 0.5, 0.1),
+#'   bottleneck_index = c(0.85, 0.35, 0.55, 0.15),
+#'   class = c("dual", "weak", "silencer", "weak")
 #' )
 #'
 #' clinical_df <- data.frame(
-#'   barcode = paste0("P", 1:10),
-#'   OS.time = rexp(10, rate = 0.1),
-#'   OS = sample(0:1, 10, replace = TRUE)
+#'   patient = paste0("P", seq_len(n_patients)),
+#'   OS_days = rexp(n_patients, rate = 0.01) * 365,
+#'   OS_status = sample(0:1, n_patients, replace = TRUE),
+#'   age = sample(50:75, n_patients, replace = TRUE),
+#'   stage_clean = sample(c("II", "III", "IV"), n_patients, replace = TRUE)
 #' )
 #'
 #' mirna_norm_map <- data.frame(
@@ -51,8 +58,9 @@
 #'   classified_df = classified_df,
 #'   clinical_df = clinical_df,
 #'   mirna_norm_map = mirna_norm_map,
-#'   cox_p_threshold = 0.15
+#'   cox_p_threshold = 0.99
 #' )
+#' }
 composite_score <- function(mirna_log, classified_df, clinical_df,
                             mirna_norm_map, cox_p_threshold = 0.15) {
 
