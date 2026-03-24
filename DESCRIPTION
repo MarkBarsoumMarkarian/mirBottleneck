@@ -1,7 +1,7 @@
 Package: mirBottleneck
 Title: miRNA Bottleneck Scoring for Cancer Survival Prediction
 Version: 0.99.0
-Authors@R: person("Mark Barsoum", "Markarian",
+Authors@R: person("Mark Barsoum Markarian",
     email = "mkm25@mail.aub.edu",
     role = c("aut", "cre"))
 Description: Identifies miRNAs acting as transcriptome stabilizers in cancer
@@ -29,10 +29,8 @@ Suggests:
     testthat (>= 3.0.0),
     BiocStyle,
     knitr,
-    rmarkdown,
-    plotly,
-    DT,
-    scales
-biocViews: GeneExpression, Survival, miRNA, RNASeq, Transcriptomics, BiomedicalInformatics, ImmunoOncology
+    rmarkdown
+biocViews: GeneExpression, Survival, miRNA, RNASeq, Transcriptomics, BiomedicalInformatics, ImmunoOncology, Pancreas
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+
