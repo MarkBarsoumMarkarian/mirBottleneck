@@ -1,3 +1,7 @@
+#' @importFrom stats median lm cor var weighted.mean p.adjust AIC
+#' @importFrom utils head
+NULL
+
 #' Harmonize TCGA barcodes to patient level
 #'
 #' Standardizes any TCGA barcode to the first 12 characters (patient-level),

@@ -24,7 +24,9 @@
 #' @param vss_keep_top Integer, keep top-N miRNAs by VSS for coherence scoring.
 #' @param n_perm Passed to `score_coherence()`
 #' @param max_targets Passed to `score_coherence()`
-#' @param cox_p_threshold Passed to `composite_score()`
+#' @param cox_p_threshold p-value threshold for composite_score().
+#' @param report Logical. If TRUE, generate an HTML report.
+#' @param cohort_name Character label used in the HTML report.
 #'
 #' @return Invisible list of key objects.
 #' @export
