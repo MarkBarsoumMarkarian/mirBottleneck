@@ -20,6 +20,8 @@ harmonize_barcode <- function(x) {
 #'
 #' @param x Character vector of miRNA IDs
 #' @return Normalized character vector
+#' @examples
+#' normalize_mirna(c("hsa-miR-21-5p", "hsa-miR-21-3p"))
 #' @keywords internal
 normalize_mirna <- function(x) {
   x <- tolower(x)
@@ -30,8 +32,10 @@ normalize_mirna <- function(x) {
 #' Normalize a numeric vector to 0-1 range
 #'
 #' @param x Numeric vector
-#' @return Numeric vector scaled to 0-1; returns all-zero for zero-variance
+#' @return Numeric vector scaled to the 0-1 range; returns all-zero for zero-variance
 #'   input, and all-NA for non-finite input.
+#' @examples
+#' normalize_01(c(10, 20, 30))
 #' @keywords internal
 normalize_01 <- function(x) {
   rng <- range(x, na.rm = TRUE)
@@ -39,11 +43,14 @@ normalize_01 <- function(x) {
   if (rng[2] - rng[1] == 0) return(rep(0, length(x)))
   (x - rng[1]) / (rng[2] - rng[1])
 }
-
 #' Compute mean pairwise correlation of a matrix
 #'
 #' @param mat Numeric matrix (genes x samples)
 #' @return Mean of upper triangle of correlation matrix, or NA
+#' @examples
+#' set.seed(1)
+#' mat <- matrix(rnorm(30), nrow = 5)
+#' mean_pairwise_cor(mat)
 #' @keywords internal
 mean_pairwise_cor <- function(mat) {
   if (is.null(mat) || nrow(mat) < 2 || ncol(mat) < 2) return(NA)

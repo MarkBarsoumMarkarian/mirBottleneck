@@ -10,10 +10,13 @@ normalize_01(x)
 \item{x}{Numeric vector}
 }
 \value{
-Numeric vector scaled to 0-1; returns all-zero for zero-variance
+Numeric vector scaled to the 0-1 range; returns all-zero for zero-variance
 input, and all-NA for non-finite input.
 }
 \description{
 Normalize a numeric vector to 0-1 range
+}
+\examples{
+normalize_01(c(10, 20, 30))
 }
 \keyword{internal}

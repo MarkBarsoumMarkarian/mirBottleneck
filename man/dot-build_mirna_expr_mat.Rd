@@ -22,4 +22,22 @@ Numeric matrix (unique miRNAs x patients).
 Collapses isoform rows by averaging and optionally subsets to specific
 patients, returning a matrix with one row per unique normalized miRNA ID.
 }
+\examples{
+set.seed(1)
+mirna_log <- matrix(rnorm(12), nrow = 3,
+  dimnames = list(c("hsa-mir-1","hsa-mir-2","hsa-mir-3"), paste0("P", 1:4))
+)
+mirna_norm_map <- data.frame(
+  original = rownames(mirna_log),
+  norm = rownames(mirna_log),
+  stringsAsFactors = FALSE
+)
+mat <- .build_mirna_expr_mat(
+  mirna_log,
+  norm_ids = rownames(mirna_log),
+  mirna_norm_map = mirna_norm_map,
+  patients = colnames(mirna_log)
+)
+dim(mat)
+}
 \keyword{internal}

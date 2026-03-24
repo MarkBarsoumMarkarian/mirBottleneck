@@ -21,4 +21,17 @@ For each unique normalized miRNA ID, averages expression across all
 isoform rows in \code{mirna_log}, then returns a named list where each
 element is a numeric vector of length = number of patients.
 }
+\examples{
+set.seed(1)
+mirna_log <- matrix(rnorm(12), nrow = 3,
+  dimnames = list(c("hsa-mir-1","hsa-mir-2","hsa-mir-3"), paste0("P", 1:4))
+)
+mirna_norm_map <- data.frame(
+  original = rownames(mirna_log),
+  norm = rownames(mirna_log),
+  stringsAsFactors = FALSE
+)
+x <- .build_mirna_expr(mirna_log, norm_ids = rownames(mirna_log), mirna_norm_map = mirna_norm_map)
+names(x)
+}
 \keyword{internal}
