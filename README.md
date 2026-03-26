@@ -13,7 +13,7 @@
 
 | Score | What it measures |
 |---|---|
-| **VSS** — Variance Suppression Score | How much a miRNA reduces expression variance across its validated targets |
+| **VSS** Variance Suppression Score | How much a miRNA reduces expression variance across its validated targets |
 | **Coherence Score** | How much a miRNA coordinates its targets into coherent co-expression programs |
 
 miRNAs are then classified into four functional archetypes — **Silencer**, **Conductor**, **Dual**, and **Weak** — and a patient-level **composite bottleneck index** is built from the top survival-associated bottleneck miRNAs. This index is evaluated against overall survival using Cox proportional hazards models.
@@ -83,7 +83,7 @@ Queries miRTarBase via `multiMiR` to retrieve validated miRNA–target interacti
 Fits a linear model of each target gene on miRNA expression across patients. VSS = mean R² across all validated targets per miRNA.
 
 ### `score_coherence(mirna_log, rna_sym, mirna_targets, ...)`
-Splits patients by median miRNA expression, then measures whether target genes become more correlated in the high-expression group. Coherence = Δ mean pairwise correlation (high − low), with empirical p-values via permutation.
+Splits patients by median miRNA expression, then measures whether target genes become more correlated in the high-expression group. Coherence = Δ mean pairwise correlation (high - low), with empirical p-values via permutation.
 
 ### `classify_bottleneck(vss_scores, coherence_scores)`
 Normalizes both scores to [0,1], computes a composite bottleneck index, and classifies each miRNA:
@@ -102,9 +102,9 @@ Builds a direction-aware weighted patient-level score using survival-associated 
 Fits three Cox models (score alone, clinical alone, combined) and a log-rank test comparing High vs Low score groups.
 
 ### Utilities (`utils.R`)
-- `harmonize_barcode()` — standardize TCGA barcodes to 12-character patient level
-- `normalize_mirna_id()` — convert mature miRNA IDs to lowercase precursor format
-- `normalize_01()` — min-max normalization
+- `harmonize_barcode()`: standardize TCGA barcodes to 12-character patient level
+- `normalize_mirna_id()`: convert mature miRNA IDs to lowercase precursor format
+- `normalize_01()`: min-max normalization
 
 ---
 
