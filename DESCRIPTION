@@ -1,9 +1,10 @@
 Package: mirBottleneck
 Title: miRNA Bottleneck Scoring for Cancer Survival Prediction
 Version: 0.99.0
-Authors@R: person("Mark Barsoum", "Markarian")
+Authors@R: person(given = "Mark Barsoum", family = "Markarian",
     email = "mkm25@mail.aub.edu",
-    role = c("aut", "cre"))
+    role = c("aut", "cre"),
+    comment = c(ORCID = "0009-0006-1240-9534"))
 Description: Identifies miRNAs acting as transcriptome stabilizers in cancer
     using two complementary scores: variance suppression (how much a miRNA
     reduces target gene variance) and coherence induction (how much a miRNA
@@ -13,25 +14,25 @@ Description: Identifies miRNAs acting as transcriptome stabilizers in cancer
 License: MIT + file LICENSE
 URL: https://github.com/MarkBarsoumMarkarian/mirBottleneck
 BugReports: https://github.com/MarkBarsoumMarkarian/mirBottleneck/issues
-Depends: R (>= 4.1.0)
+Depends: R (>= 4.5.0)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Imports:
     dplyr (>= 1.0.0),
     survival (>= 3.0.0),
     multiMiR (>= 1.12.0),
-    stats,
-    methods
+    stats
 Suggests:
     maftools,
     survminer,
     testthat (>= 3.0.0),
     BiocStyle,
     knitr,
-    rmarkdown
-biocViews: GeneExpression, Survival, miRNA, RNASeq, Transcriptomics,
-    BiomedicalInformatics, ImmunoOncology
+    rmarkdown,
+    plotly,
+    DT,
+    scales
+biocViews: GeneExpression, Survival, miRNA, RNASeq, Transcriptomics, BiomedicalInformatics, ImmunoOncology
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-
