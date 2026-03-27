@@ -113,7 +113,7 @@ Fits three Cox models (score alone, clinical alone, combined) and a log-rank tes
 All `.rds` objects in `data/` are derived from **TCGA-PAAD** (pancreatic adenocarcinoma) raw data downloaded via `TCGAbiolinks`. Raw data is not included due to size and access restrictions. The harmonized objects represent the analysis-ready output of the preprocessing pipeline.
 
 **Cohort:** 178 patients (RNA-seq + miRNA) · 167 with complete multi-omics data  
-**Source:** The Cancer Genome Atlas (TCGA) — https://www.cancer.gov/tcga
+**Source:** The Cancer Genome Atlas (TCGA) . https://www.cancer.gov/tcga
 
 ---
 
