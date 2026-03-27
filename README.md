@@ -20,7 +20,7 @@ miRNAs are then classified into four functional archetypes, **Silencer**, **Cond
 
 ![Kaplan-Meier: High vs Low Bottleneck Score](inst/figures/km_plot.png)
 
-> **New (v0.99.1):** Hallmark ssGSEA entropy analysis added — high bottleneck score patients show significantly elevated transcriptome disorder (Spearman rho = 0.261, p = 0.0007). See `inst/scripts/08_hallmark_entropy.R`.
+> **New (v0.99.1):** Hallmark ssGSEA entropy analysis added, high bottleneck score patients show significantly elevated transcriptome disorder (Spearman rho = 0.261, p = 0.0007). See `inst/scripts/08_hallmark_entropy.R`.
 
 ---
 
