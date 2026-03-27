@@ -29,10 +29,9 @@ Suggests:
     testthat (>= 3.0.0),
     BiocStyle,
     knitr,
-    rmarkdown,
-    plotly,
-    DT,
-    scales
-biocViews: GeneExpression, Survival, miRNA, RNASeq, Transcriptomics, BiomedicalInformatics, ImmunoOncology
+    rmarkdown
+biocViews: GeneExpression, Survival, miRNA, RNASeq, Transcriptomics,
+    BiomedicalInformatics, ImmunoOncology
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+
