@@ -114,14 +114,15 @@ test_that("SummarizedExperiment path has shape parity with matrix path", {
 
   set.seed(13)
   patients <- paste0("P", 1:12)
+  features <- paste0("f", 1:20)
   mirna_log <- matrix(rnorm(2 * length(patients)), nrow = 2,
-                      dimnames = list(c("mir1", "mir2"), patients))
+                      dimnames = list(features[1:2], patients))
   rna_sym <- matrix(rnorm(20 * length(patients)), nrow = 20,
-                    dimnames = list(paste0("g", 1:20), patients))
+                    dimnames = list(features, patients))
 
   mirna_targets <- data.frame(
-    mirna = c("mir1", "mir2"),
-    targets = I(list(paste0("g", 1:10), paste0("g", 11:20))),
+    mirna = features[1:2],
+    targets = I(list(features[11:20], features[1:10])),
     n_targets = c(10L, 10L),
     stringsAsFactors = FALSE
   )
@@ -130,9 +131,12 @@ test_that("SummarizedExperiment path has shape parity with matrix path", {
     norm = rownames(mirna_log),
     stringsAsFactors = FALSE
   )
+  mirna_se <- matrix(rnorm(20 * length(patients)), nrow = 20,
+                     dimnames = list(features, patients))
+  mirna_se[features[1:2], ] <- mirna_log
 
   se <- SummarizedExperiment::SummarizedExperiment(
-    assays = list(mirna = mirna_log, mrna = rna_sym)
+    assays = list(mirna = mirna_se, mrna = rna_sym)
   )
 
   mat_vss <- compute_vss(mirna_log, rna_sym, mirna_targets, mirna_norm_map)

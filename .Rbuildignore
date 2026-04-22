@@ -2,3 +2,4 @@
 ^CHANGELOG\.md$
 ^\.git$
 ^mirBottleneck\.BiocCheck$
+^_pkgdown\.yml$

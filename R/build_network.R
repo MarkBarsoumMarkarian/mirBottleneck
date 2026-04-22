@@ -16,7 +16,7 @@
 #' @importFrom multiMiR get_multimir
 #' @importFrom dplyr filter mutate select group_by summarise bind_rows distinct
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # build_network() may query a remote miRNA-target resource; keep out of routine checks
 #' mirna_ids <- c("hsa-miR-21-5p", "hsa-miR-155-5p")
 #' rna_symbols <- c("KRAS", "TP53", "SMAD4", "CDKN2A", "EGFR")
