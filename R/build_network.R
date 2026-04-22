@@ -38,7 +38,8 @@ build_network <- function(mirna_ids,
   if (!requireNamespace("multiMiR", quietly = TRUE)) {
     stop(
       "Package 'multiMiR' is required for build_network(). ",
-      "Install it using BiocManager::install('multiMiR').",
+      "Install it with install.packages('BiocManager') and then ",
+      "BiocManager::install('multiMiR').",
       call. = FALSE
     )
   }
