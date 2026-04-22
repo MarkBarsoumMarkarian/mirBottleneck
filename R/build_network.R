@@ -13,7 +13,6 @@
 #'   hsa-miR-21-5p, hsa-miR-155-5p.
 #' @return A data frame with columns: mirna, targets (list column), n_targets
 #' @export
-#' @importFrom multiMiR get_multimir
 #' @importFrom dplyr filter mutate select group_by summarise bind_rows distinct
 #' @examples
 #' \donttest{
