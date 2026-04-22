@@ -117,8 +117,8 @@ test_that("SummarizedExperiment path has shape parity with matrix path", {
   features <- paste0("f", 1:22)
   mirna_log <- matrix(rnorm(2 * length(patients)), nrow = 2,
                       dimnames = list(features[1:2], patients))
-  feature_expr <- matrix(rnorm(length(features) * length(patients)), nrow = length(features),
-                         dimnames = list(features, patients))
+  all_features_expr <- matrix(rnorm(length(features) * length(patients)), nrow = length(features),
+                              dimnames = list(features, patients))
 
   mirna_targets <- data.frame(
     mirna = features[1:2],
@@ -131,14 +131,15 @@ test_that("SummarizedExperiment path has shape parity with matrix path", {
     norm = rownames(mirna_log),
     stringsAsFactors = FALSE
   )
-  mirna_assay_mat <- feature_expr
+  # SummarizedExperiment assays must share dimensions; inject miRNA rows into full feature matrix.
+  mirna_assay_mat <- all_features_expr
   mirna_assay_mat[features[1:2], ] <- mirna_log
 
   se <- SummarizedExperiment::SummarizedExperiment(
-    assays = list(mirna = mirna_assay_mat, mrna = feature_expr)
+    assays = list(mirna = mirna_assay_mat, mrna = all_features_expr)
   )
 
-  mat_vss <- compute_vss(mirna_log, feature_expr, mirna_targets, mirna_norm_map)
+  mat_vss <- compute_vss(mirna_log, all_features_expr, mirna_targets, mirna_norm_map)
   se_vss <- compute_vss(
     mirna_targets = mirna_targets,
     mirna_norm_map = mirna_norm_map,
