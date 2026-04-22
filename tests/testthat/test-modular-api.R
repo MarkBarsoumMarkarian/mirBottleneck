@@ -114,8 +114,8 @@ test_that("SummarizedExperiment path has shape parity with matrix path", {
 
   set.seed(13)
   patients <- paste0("P", 1:12)
-  mirna_log <- matrix(rnorm(2 * length(patients)), nrow = 2,
-                      dimnames = list(c("mir1", "mir2"), patients))
+  mirna_log <- matrix(rnorm(20 * length(patients)), nrow = 20,
+                      dimnames = list(paste0("mir", 1:20), patients))
   rna_sym <- matrix(rnorm(20 * length(patients)), nrow = 20,
                     dimnames = list(paste0("g", 1:20), patients))
 
