@@ -122,7 +122,7 @@ test_that("SummarizedExperiment path has shape parity with matrix path", {
 
   mirna_targets <- data.frame(
     mirna = features[1:2],
-    targets = I(list(features[11:20], features[1:10])),
+    targets = I(list(features[1:10], features[11:20])),
     n_targets = c(10L, 10L),
     stringsAsFactors = FALSE
   )
