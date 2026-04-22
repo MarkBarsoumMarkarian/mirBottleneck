@@ -1,0 +1,56 @@
+---
+title: "Modular workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Modular workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+This vignette introduces the Phase 1 modular APIs:
+
+- `compute_vss()`
+- `compute_cis()`
+- `classify_archetypes()`
+- `plot_archetype_landscape()`
+
+```{r}
+library(mirBottleneck)
+
+toy_path <- function(f) system.file("extdata", f, package = "mirBottleneck", mustWork = TRUE)
+mirna_log <- readRDS(toy_path("toy_mirna_log.rds"))
+rna_sym <- readRDS(toy_path("toy_rna_sym.rds"))
+mirna_targets <- readRDS(toy_path("toy_mirna_targets.rds"))
+mirna_norm_map <- readRDS(toy_path("toy_mirna_norm_map.rds"))
+
+vss <- compute_vss(
+  mirna_log = mirna_log,
+  rna_sym = rna_sym,
+  mirna_targets = mirna_targets,
+  mirna_norm_map = mirna_norm_map
+)
+
+cis <- compute_cis(
+  mirna_log = mirna_log,
+  rna_sym = rna_sym,
+  mirna_targets = mirna_targets,
+  mirna_norm_map = mirna_norm_map,
+  scored_mirnas = vss$mirna,
+  n_perm = 10
+)
+
+classes <- classify_archetypes(vss, cis)
+plot_archetype_landscape(classes)
+```
+
+## TODO (Phase 2)
+
+Continuous outcome support and modeling extensions.
+
+## TODO (Phase 3)
+
+Pan-cancer parallel scale-up and performance tuning.

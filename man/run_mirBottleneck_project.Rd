@@ -19,6 +19,8 @@ run_mirBottleneck_project(
   vss_keep_top = 300,
   n_perm = 200,
   max_targets = 200,
+  BPPARAM_vss = NULL,
+  BPPARAM_cis = NULL,
   cox_p_threshold = 0.15,
   report = FALSE,
   cohort_name = "TCGA-PAAD"
@@ -48,9 +50,13 @@ as returned by \code{build_network()} (columns: mirna, targets(list), n_targets)
 
 \item{vss_keep_top}{Integer, keep top-N miRNAs by VSS for coherence scoring.}
 
-\item{n_perm}{Passed to \code{score_coherence()}}
+\item{n_perm}{Passed to \code{compute_cis()}}
 
-\item{max_targets}{Passed to \code{score_coherence()}}
+\item{max_targets}{Passed to \code{compute_cis()}}
+
+\item{BPPARAM_vss}{Optional BiocParallel parameter for \code{compute_vss()} (serial fallback).}
+
+\item{BPPARAM_cis}{Optional BiocParallel parameter for \code{compute_cis()} (serial fallback).}
 
 \item{cox_p_threshold}{p-value threshold for composite_score().}
 
