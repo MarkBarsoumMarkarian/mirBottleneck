@@ -22,8 +22,10 @@
 #' @param min_targets Passed to `build_network()`
 #' @param rescue_mirnas Passed to `build_network()`
 #' @param vss_keep_top Integer, keep top-N miRNAs by VSS for coherence scoring.
-#' @param n_perm Passed to `score_coherence()`
-#' @param max_targets Passed to `score_coherence()`
+#' @param n_perm Passed to `compute_cis()`
+#' @param max_targets Passed to `compute_cis()`.
+#' @param BPPARAM_vss Optional BiocParallel parameter for `compute_vss()` (serial fallback).
+#' @param BPPARAM_cis Optional BiocParallel parameter for `compute_cis()` (serial fallback).
 #' @param cox_p_threshold p-value threshold for composite_score().
 #' @param report Logical. If TRUE, generate an HTML report.
 #' @param cohort_name Character label used in the HTML report.
@@ -60,6 +62,8 @@ run_mirBottleneck_project <- function(
   vss_keep_top = 300,
   n_perm = 200,
   max_targets = 200,
+  BPPARAM_vss = NULL,
+  BPPARAM_cis = NULL,
   cox_p_threshold = 0.15,
   report = FALSE,
   cohort_name = "TCGA-PAAD"
@@ -116,30 +120,32 @@ run_mirBottleneck_project <- function(
   saveRDS(mirna_targets, file = file.path(out_dir, "mirna_targets.rds"))
 
   # ---- Scoring pipeline ----
-  vss_scores <- score_vss(
+  vss_scores <- compute_vss(
     mirna_log = mirna_log,
     rna_sym = rna_sym,
     mirna_targets = mirna_targets,
-    mirna_norm_map = mirna_norm_map
+    mirna_norm_map = mirna_norm_map,
+    BPPARAM = BPPARAM_vss
   )
   saveRDS(vss_scores, file = file.path(out_dir, "vss_scores.rds"))
   utils::write.csv(vss_scores, file = file.path(out_dir, "vss_scores.csv"), row.names = FALSE)
 
   scored_mirnas <- head(vss_scores$mirna, n = min(vss_keep_top, nrow(vss_scores)))
 
-  coherence_scores <- score_coherence(
+  coherence_scores <- compute_cis(
     mirna_log = mirna_log,
     rna_sym = rna_sym,
     mirna_targets = mirna_targets,
     mirna_norm_map = mirna_norm_map,
     scored_mirnas = scored_mirnas,
     n_perm = n_perm,
-    max_targets = max_targets
+    max_targets = max_targets,
+    BPPARAM = BPPARAM_cis
   )
   saveRDS(coherence_scores, file = file.path(out_dir, "coherence_scores.rds"))
   utils::write.csv(coherence_scores, file = file.path(out_dir, "coherence_scores.csv"), row.names = FALSE)
 
-  combined <- classify_bottleneck(vss_scores = vss_scores, coherence_scores = coherence_scores)
+  combined <- classify_archetypes(vss_scores = vss_scores, coherence_scores = coherence_scores)
   saveRDS(combined, file = file.path(out_dir, "mirna_bottleneck.rds"))
   utils::write.csv(combined, file = file.path(out_dir, "mirna_bottleneck.csv"), row.names = FALSE)
 

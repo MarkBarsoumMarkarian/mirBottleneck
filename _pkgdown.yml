@@ -1,0 +1,28 @@
+template:
+  bootstrap: 5
+
+home:
+  title: mirBottleneck
+
+reference:
+  - title: Core workflow
+    contents:
+      - run_mirBottleneck_project
+      - build_network
+      - score_vss
+      - score_coherence
+      - classify_bottleneck
+      - composite_score
+      - survival_model
+  - title: Modular API (Phase 1)
+    contents:
+      - compute_vss
+      - compute_cis
+      - classify_archetypes
+      - plot_archetype_landscape
+
+articles:
+  - title: Vignettes
+    contents:
+      - mirBottleneck-workflow
+      - modular-workflow

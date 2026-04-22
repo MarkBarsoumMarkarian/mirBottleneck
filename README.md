@@ -163,6 +163,57 @@ surv <- survival_model(composite$patient_scores, clinical)
 
 ---
 
+
+## Modular API (Phase 1)
+
+You can now run the scoring workflow in modular steps while keeping the existing wrapper unchanged.
+
+```r
+vss_scores <- compute_vss(
+  mirna_log = mirna_log,
+  rna_sym = rna_final,
+  mirna_targets = targets,
+  mirna_norm_map = mirna_norm
+)
+
+coherence_scores <- compute_cis(
+  mirna_log = mirna_log,
+  rna_sym = rna_final,
+  mirna_targets = targets,
+  mirna_norm_map = mirna_norm,
+  scored_mirnas = vss_scores$mirna
+)
+
+classified <- classify_archetypes(vss_scores, coherence_scores)
+```
+
+## SummarizedExperiment input
+
+`compute_vss()` and `compute_cis()` also accept a `SummarizedExperiment` with configurable assay names.
+
+```r
+se <- SummarizedExperiment::SummarizedExperiment(
+  assays = list(mirna = mirna_log, mrna = rna_final)
+)
+
+vss_scores <- compute_vss(
+  se = se,
+  mirna_targets = targets,
+  mirna_norm_map = mirna_norm,
+  mirna_assay = "mirna",
+  mrna_assay = "mrna"
+)
+```
+
+## Plotting API
+
+`plot_archetype_landscape()` returns a standard `ggplot2` object for customization.
+
+```r
+p <- plot_archetype_landscape(classified)
+p + ggplot2::ggtitle("miRNA archetype landscape")
+```
+
 ## Hallmark Entropy Analysis
 
 Script: `inst/scripts/08_hallmark_entropy.R`
