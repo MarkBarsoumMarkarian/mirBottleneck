@@ -13,7 +13,6 @@
 #'   hsa-miR-21-5p, hsa-miR-155-5p.
 #' @return A data frame with columns: mirna, targets (list column), n_targets
 #' @export
-#' @importFrom multiMiR get_multimir
 #' @importFrom dplyr filter mutate select group_by summarise bind_rows distinct
 #' @examples
 #' \donttest{
@@ -36,6 +35,13 @@ build_network <- function(mirna_ids,
                                             "hsa-miR-155-5p", "hsa-miR-155-3p",
                                             "hsa-miR-196a-5p","hsa-miR-196b-5p",
                                             "hsa-miR-210-3p")) {
+  if (!requireNamespace("multiMiR", quietly = TRUE)) {
+    stop(
+      "Package 'multiMiR' is required for build_network(). ",
+      "Install it with BiocManager::install('multiMiR').",
+      call. = FALSE
+    )
+  }
 
   message("Querying miRTarBase in batches of ", batch_size, "...")
   n_batches <- ceiling(length(mirna_ids) / batch_size)
