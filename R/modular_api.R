@@ -211,7 +211,13 @@ compute_cis <- function(mirna_log = NULL,
 #'   and assigned class.
 #' @export
 classify_archetypes <- function(vss_scores, coherence_scores) {
+  n_vss <- nrow(vss_scores)
+  n_coh <- nrow(coherence_scores)
   combined <- dplyr::inner_join(vss_scores, coherence_scores, by = "mirna")
+  if (nrow(combined) < min(n_vss, n_coh)) {
+    message("Dropped ", min(n_vss, n_coh) - nrow(combined),
+            " miRNAs not shared between VSS and coherence inputs.")
+  }
   combined <- combined |>
     dplyr::mutate(
       vss_norm = normalize_01(vss),

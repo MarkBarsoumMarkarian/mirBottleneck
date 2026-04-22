@@ -22,7 +22,7 @@ plot_archetype_landscape <- function(classified_df) {
 
   ggplot2::ggplot(
     classified_df,
-    ggplot2::aes(x = vss, y = coherence_score, color = class)
+    ggplot2::aes(x = vss, y = coherence_score, color = class, shape = class)
   ) +
     ggplot2::geom_point(alpha = 0.8, size = 2) +
     ggplot2::geom_vline(xintercept = med_vss, linetype = "dashed", color = "grey50") +
@@ -30,7 +30,8 @@ plot_archetype_landscape <- function(classified_df) {
     ggplot2::labs(
       x = "Variance Suppression Score (VSS)",
       y = "Coherence Induction Score",
-      color = "Archetype"
+      color = "Archetype",
+      shape = "Archetype"
     ) +
     ggplot2::theme_minimal()
 }

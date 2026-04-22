@@ -81,8 +81,15 @@ test_that("classify_archetypes assigns known quadrants", {
 })
 
 test_that("run_mirBottleneck_project smoke test works on toy data", {
-  paths <- mirBottleneck:::.toy_paths()
-  skip_if_not(all(file.exists(unlist(paths))), "Toy datasets not available")
+  toy_path <- function(f) system.file("extdata", f, package = "mirBottleneck", mustWork = FALSE)
+  paths <- list(
+    mirna_log = toy_path("toy_mirna_log.rds"),
+    rna_sym = toy_path("toy_rna_sym.rds"),
+    clinical_df = toy_path("toy_clinical_df.rds"),
+    mirna_norm_map = toy_path("toy_mirna_norm_map.rds"),
+    mirna_targets = toy_path("toy_mirna_targets.rds")
+  )
+  skip_if_not(all(nzchar(unlist(paths))), "Toy datasets not available")
 
   out <- file.path(tempdir(), "mirbottleneck_smoke")
   res <- run_mirBottleneck_project(

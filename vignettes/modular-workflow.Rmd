@@ -21,11 +21,11 @@ This vignette introduces the Phase 1 modular APIs:
 ```{r}
 library(mirBottleneck)
 
-paths <- mirBottleneck:::.toy_paths()
-mirna_log <- readRDS(paths$mirna_log)
-rna_sym <- readRDS(paths$rna_sym)
-mirna_targets <- readRDS(paths$mirna_targets)
-mirna_norm_map <- readRDS(paths$mirna_norm_map)
+toy_path <- function(f) system.file("extdata", f, package = "mirBottleneck", mustWork = TRUE)
+mirna_log <- readRDS(toy_path("toy_mirna_log.rds"))
+rna_sym <- readRDS(toy_path("toy_rna_sym.rds"))
+mirna_targets <- readRDS(toy_path("toy_mirna_targets.rds"))
+mirna_norm_map <- readRDS(toy_path("toy_mirna_norm_map.rds"))
 
 vss <- compute_vss(
   mirna_log = mirna_log,

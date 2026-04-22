@@ -47,6 +47,7 @@
     )
   }
   if (!identical(mir_samples, mrna_samples)) {
+    message("Reordering rna_sym columns to match mirna_log sample order.")
     rna_sym <- rna_sym[, mir_samples, drop = FALSE]
   }
 
