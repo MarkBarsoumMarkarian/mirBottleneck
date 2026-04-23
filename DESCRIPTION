@@ -21,7 +21,7 @@ RoxygenNote: 7.3.3
 Imports:
     dplyr (>= 1.0.0),
     survival (>= 3.0.0),
-    ggplot2,
+    multiMiR (>= 1.12.0),
     stats
 Suggests:
     maftools,
@@ -29,12 +29,8 @@ Suggests:
     testthat (>= 3.0.0),
     BiocStyle,
     knitr,
-    rmarkdown,
-    SummarizedExperiment,
-    BiocParallel,
-    pkgdown
+    rmarkdown
 biocViews: GeneExpression, Survival, miRNA, RNASeq, Transcriptomics,
     BiomedicalInformatics, ImmunoOncology
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-
