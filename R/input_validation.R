@@ -124,18 +124,91 @@
   )
 }
 
+#' Extract miRNA and mRNA assays from separate SummarizedExperiment objects
+#'
+#' @param se_mirna SummarizedExperiment instance containing miRNA assay.
+#' @param se_mrna SummarizedExperiment instance containing mRNA assay.
+#' @param mirna_assay Character. miRNA assay name.
+#' @param mrna_assay Character. mRNA assay name.
+#' @keywords internal
+.extract_from_se_pair <- function(se_mirna,
+                                  se_mrna,
+                                  mirna_assay = "mirna",
+                                  mrna_assay = "mrna") {
+  if (!inherits(se_mirna, "SummarizedExperiment")) {
+    stop("se_mirna must be a SummarizedExperiment object.", call. = FALSE)
+  }
+  if (!inherits(se_mrna, "SummarizedExperiment")) {
+    stop("se_mrna must be a SummarizedExperiment object.", call. = FALSE)
+  }
+
+  if (!requireNamespace("SummarizedExperiment", quietly = TRUE)) {
+    stop("Package 'SummarizedExperiment' is required for SE input.", call. = FALSE)
+  }
+
+  mirna_assay_names <- SummarizedExperiment::assayNames(se_mirna)
+  if (!mirna_assay %in% mirna_assay_names) {
+    stop(
+      "Missing miRNA assay '", mirna_assay, "' in se_mirna. Available assays: ",
+      paste(mirna_assay_names, collapse = ", "),
+      call. = FALSE
+    )
+  }
+  mrna_assay_names <- SummarizedExperiment::assayNames(se_mrna)
+  if (!mrna_assay %in% mrna_assay_names) {
+    stop(
+      "Missing mRNA assay '", mrna_assay, "' in se_mrna. Available assays: ",
+      paste(mrna_assay_names, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  mirna_log <- SummarizedExperiment::assay(se_mirna, mirna_assay)
+  rna_sym <- SummarizedExperiment::assay(se_mrna, mrna_assay)
+
+  if (is.null(colnames(mirna_log)) || is.null(colnames(rna_sym))) {
+    stop("Both assays must have sample IDs as colnames.", call. = FALSE)
+  }
+  if (!identical(colnames(mirna_log), colnames(rna_sym))) {
+    stop(
+      "Sample alignment mismatch between se_mirna and se_mrna assays. ",
+      "Ensure identical sample IDs and order.",
+      call. = FALSE
+    )
+  }
+
+  list(
+    mirna_log = mirna_log,
+    rna_sym = rna_sym
+  )
+}
+
 #' Resolve expression inputs from matrices or SummarizedExperiment
 #'
 #' @keywords internal
 .resolve_expression_inputs <- function(mirna_log = NULL,
                                        rna_sym = NULL,
                                        se = NULL,
+                                       se_mirna = NULL,
+                                       se_mrna = NULL,
                                        mirna_assay = "mirna",
                                        mrna_assay = "mrna",
                                        mirna_targets,
                                        mirna_norm_map,
                                        scored_mirnas = NULL) {
-  if (!is.null(se)) {
+  if (!is.null(se_mirna) || !is.null(se_mrna)) {
+    if (is.null(se_mirna) || is.null(se_mrna)) {
+      stop("Both se_mirna and se_mrna must be provided when using SE input.", call. = FALSE)
+    }
+    extracted <- .extract_from_se_pair(
+      se_mirna = se_mirna,
+      se_mrna = se_mrna,
+      mirna_assay = mirna_assay,
+      mrna_assay = mrna_assay
+    )
+    mirna_log <- extracted$mirna_log
+    rna_sym <- extracted$rna_sym
+  } else if (!is.null(se)) {
     extracted <- .extract_from_se(
       se = se,
       mirna_assay = mirna_assay,

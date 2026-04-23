@@ -131,15 +131,19 @@ test_that("SummarizedExperiment path has shape parity with matrix path", {
     stringsAsFactors = FALSE
   )
 
-  se <- SummarizedExperiment::SummarizedExperiment(
-    assays = list(mirna = mirna_log, mrna = rna_sym)
+  se_mirna <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(mirna = mirna_log)
+  )
+  se_mrna <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(mrna = rna_sym)
   )
 
   mat_vss <- compute_vss(mirna_log, rna_sym, mirna_targets, mirna_norm_map)
   se_vss <- compute_vss(
     mirna_targets = mirna_targets,
     mirna_norm_map = mirna_norm_map,
-    se = se
+    se_mirna = se_mirna,
+    se_mrna = se_mrna
   )
 
   expect_equal(ncol(mat_vss), ncol(se_vss))
@@ -166,15 +170,19 @@ test_that("validation errors for missing assays and mismatched sample IDs are in
     stringsAsFactors = FALSE
   )
 
-  se_missing <- SummarizedExperiment::SummarizedExperiment(
+  se_mirna <- SummarizedExperiment::SummarizedExperiment(
     assays = list(only_mirna = mirna_log)
+  )
+  se_mrna <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(mrna = rna_sym)
   )
 
   expect_error(
     compute_vss(
       mirna_targets = mirna_targets,
       mirna_norm_map = mirna_norm_map,
-      se = se_missing
+      se_mirna = se_mirna,
+      se_mrna = se_mrna
     ),
     "Missing miRNA assay|Missing mRNA assay"
   )

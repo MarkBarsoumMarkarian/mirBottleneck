@@ -189,15 +189,19 @@ classified <- classify_archetypes(vss_scores, coherence_scores)
 
 ## SummarizedExperiment input
 
-`compute_vss()` and `compute_cis()` also accept a `SummarizedExperiment` with configurable assay names.
+`compute_vss()` accepts separate `SummarizedExperiment` objects for miRNA and mRNA assays.
 
 ```r
-se <- SummarizedExperiment::SummarizedExperiment(
-  assays = list(mirna = mirna_log, mrna = rna_final)
+se_mirna <- SummarizedExperiment::SummarizedExperiment(
+  assays = list(mirna = mirna_log)
+)
+se_mrna <- SummarizedExperiment::SummarizedExperiment(
+  assays = list(mrna = rna_final)
 )
 
 vss_scores <- compute_vss(
-  se = se,
+  se_mirna = se_mirna,
+  se_mrna = se_mrna,
   mirna_targets = targets,
   mirna_norm_map = mirna_norm,
   mirna_assay = "mirna",

@@ -8,9 +8,10 @@
 #' @param rna_sym Numeric matrix/data.frame of mRNA expression (genes x samples).
 #' @param mirna_targets Data frame with columns `mirna`, `targets` (list), and `n_targets`.
 #' @param mirna_norm_map Data frame with columns `original`, `norm`.
-#' @param se Optional `SummarizedExperiment` with miRNA and mRNA assays.
-#' @param mirna_assay Assay name for miRNA expression when `se` is used.
-#' @param mrna_assay Assay name for mRNA expression when `se` is used.
+#' @param se_mirna Optional `SummarizedExperiment` containing the miRNA assay.
+#' @param se_mrna Optional `SummarizedExperiment` containing the mRNA assay.
+#' @param mirna_assay Assay name for miRNA expression when `se_mirna` is used.
+#' @param mrna_assay Assay name for mRNA expression when `se_mrna` is used.
 #' @param BPPARAM Optional BiocParallel parameter object. Currently reserved;
 #'   computation falls back to serial execution.
 #' @return Data frame with columns: `mirna`, `vss`, `n_targets`, ordered by decreasing `vss`.
@@ -19,14 +20,16 @@ compute_vss <- function(mirna_log = NULL,
                         rna_sym = NULL,
                         mirna_targets,
                         mirna_norm_map,
-                        se = NULL,
+                        se_mirna = NULL,
+                        se_mrna = NULL,
                         mirna_assay = "mirna",
                         mrna_assay = "mrna",
                         BPPARAM = NULL) {
   resolved <- .resolve_expression_inputs(
     mirna_log = mirna_log,
     rna_sym = rna_sym,
-    se = se,
+    se_mirna = se_mirna,
+    se_mrna = se_mrna,
     mirna_assay = mirna_assay,
     mrna_assay = mrna_assay,
     mirna_targets = mirna_targets,
