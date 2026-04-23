@@ -2,3 +2,7 @@
 ^CHANGELOG\.md$
 ^\.git$
 ^mirBottleneck\.BiocCheck$
+^_pkgdown\.yml$
+^compute_entropy\.R$
+^fetch_cohort_data\.R$
+^run_mirBottleneck\.R$
