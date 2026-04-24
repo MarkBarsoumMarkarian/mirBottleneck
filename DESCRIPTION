@@ -1,0 +1,63 @@
+Package: mirBottleneck
+Title: Pan-Cancer miRNA Regulatory Bottleneck Discovery and Survival Scoring
+Version: 0.99.5
+Authors@R: 
+    person("Mark Barsoum", "Markarian",
+           email = "mkm25@mail.aub.edu",
+           role  = c("aut", "cre"),
+           comment = c(ORCID = ""))
+Description:
+    mirBottleneck implements a dual-score framework for classifying microRNAs
+    (miRNAs) into four regulatory archetypes based on their network-level
+    behaviour across cancer transcriptomes. The Variance Suppression Score
+    (VSS) quantifies a miRNA's ability to reduce variance in validated target
+    genes; the Coherence Induction Score (CIS) measures whether a miRNA
+    coordinates co-expression among its targets above chance. Together, VSS
+    and CIS define four archetypes: Conductor (high VSS, high CIS), Silencer
+    (high VSS, low CIS), Dual (low VSS, high CIS), and Weak (low VSS, low
+    CIS). A weighted composite bottleneck score derived from archetype
+    membership predicts overall survival across TCGA cancer types. The
+    package provides a fully automated pipeline for any TCGA cohort via
+    TCGAbiolinks, locked-model external validation utilities for ICGC and
+    GEO datasets, pan-cancer batch execution across all 33 TCGA projects,
+    transcriptome entropy analysis, TF activity estimation via DoRothEA and
+    VIPER, immune deconvolution via the TIMER2 REST API, and
+    publication-ready visualization functions.
+License: MIT + file LICENSE
+URL: https://github.com/MarkBarsoumMarkarian/mirBottleneck
+BugReports: https://github.com/MarkBarsoumMarkarian/mirBottleneck/issues
+biocViews: GeneExpression, Survival, miRNA, Network, BiomedicalInformatics,
+    RNASeq, Transcriptomics, MultipleComparison, Normalization, Preprocessing
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends:
+    R (>= 4.3.0)
+Imports:
+    SummarizedExperiment,
+    BiocGenerics,
+    S4Vectors,
+    IRanges,
+    TCGAbiolinks,
+    survival,
+    dplyr,
+    tidyr,
+    tibble,
+    ggplot2,
+    stringr,
+    stats,
+    utils,
+    multiMiR
+Suggests:
+    GEOquery,
+    decoupleR,
+    dorothea,
+    meta,
+    multiMiR,
+    Biobase,
+    BiocStyle,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    withr
+Config/testthat/edition: 3

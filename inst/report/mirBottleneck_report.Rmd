@@ -1,0 +1,354 @@
+---
+title: "mirBottleneck Analysis Report"
+date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
+output:
+  html_document:
+    theme: flatly
+    highlight: tango
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+    self_contained: true
+    code_folding: hide
+params:
+  results:     NULL
+  cohort_name: "TCGA-PAAD"
+  pkg_version: "0.99.0"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, fig.align="center")
+library(plotly); library(DT); library(survival)
+res          <- params$results
+combined     <- res$combined_bottleneck
+cox_ind      <- res$cox_individual
+cox_final    <- res$cox_final
+survival_df  <- res$survival_df
+targets      <- res$mirna_targets
+clinical     <- res$clinical_df
+vss_scores   <- res$vss_scores
+coherence_scores <- res$coherence_scores
+patient_scores   <- res$patient_scores
+contributing     <- res$contributing_mirnas
+class_colors <- c(dual="#D55E00", silencer="#0072B2", conductor="#009E73", weak="#999999")
+```
+
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:14px}
+.section-box{background:#f8f9fa;border-left:4px solid #2E4B7A;padding:12px 16px;border-radius:4px;margin-bottom:16px}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.metric-card{background:white;border:1px solid #dee2e6;border-radius:8px;padding:16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.metric-value{font-size:28px;font-weight:700;color:#2E4B7A}
+.metric-label{font-size:11px;color:#6c757d;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+h2{color:#2E4B7A;border-bottom:2px solid #e9ecef;padding-bottom:6px}
+h3{color:#495057}
+</style>
+
+<div class="section-box">
+**Package:** mirBottleneck v`r params$pkg_version` &nbsp;|&nbsp;
+**Cohort:** `r params$cohort_name` &nbsp;|&nbsp;
+**Generated:** `r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`
+</div>
+
+## 1. Cohort Summary
+
+```{r cohort-metrics}
+n_patients <- nrow(clinical)
+n_events   <- sum(clinical$OS_status, na.rm=TRUE)
+med_age    <- median(clinical$age, na.rm=TRUE)
+n_surv     <- nrow(survival_df)
+```
+
+<div class="metric-grid">
+<div class="metric-card"><div class="metric-value">`r n_patients`</div><div class="metric-label">Total Patients</div></div>
+<div class="metric-card"><div class="metric-value">`r n_surv`</div><div class="metric-label">With Survival Data</div></div>
+<div class="metric-card"><div class="metric-value">`r n_events`</div><div class="metric-label">Events (Deaths)</div></div>
+<div class="metric-card"><div class="metric-value">`r med_age`</div><div class="metric-label">Median Age (yrs)</div></div>
+<div class="metric-card"><div class="metric-value">`r nrow(combined)`</div><div class="metric-label">miRNAs Scored</div></div>
+<div class="metric-card"><div class="metric-value">`r nrow(contributing)`</div><div class="metric-label">Contributing miRNAs</div></div>
+</div>
+
+```{r stage-plot, fig.height=3}
+if (!is.null(clinical$stage_clean)) {
+  stg <- as.data.frame(table(Stage=clinical$stage_clean))
+  stg <- stg[!is.na(stg$Stage), ]
+  plot_ly(stg, x=~Stage, y=~Freq, type="bar",
+    marker=list(color="#2E4B7A"),
+    hovertemplate="%{x}: %{y} patients<extra></extra>") |>
+  layout(title="Tumour Stage Distribution",
+    xaxis=list(title="Stage"), yaxis=list(title="N"),
+    plot_bgcolor="white", paper_bgcolor="white")
+}
+```
+
+## 2. miRNA–Target Network
+
+```{r network-metrics}
+n_mirna  <- nrow(targets)
+med_tgts <- median(targets$n_targets)
+max_tgts <- max(targets$n_targets)
+```
+
+<div class="metric-grid">
+<div class="metric-card"><div class="metric-value">`r n_mirna`</div><div class="metric-label">miRNAs with Targets</div></div>
+<div class="metric-card"><div class="metric-value">`r med_tgts`</div><div class="metric-label">Median Targets / miRNA</div></div>
+<div class="metric-card"><div class="metric-value">`r max_tgts`</div><div class="metric-label">Max Targets</div></div>
+</div>
+
+```{r network-plot, fig.height=3.5}
+top_net <- head(targets[order(-targets$n_targets), ], 15)
+top_net$label <- gsub("hsa-mir-", "miR-", top_net$mirna)
+plot_ly(top_net, x=~reorder(label, n_targets), y=~n_targets, type="bar",
+  marker=list(color="#0072B2"),
+  hovertemplate="%{x}: %{y} targets<extra></extra>") |>
+layout(title="Top 15 miRNAs by Validated Target Count",
+  xaxis=list(title="", tickangle=-35), yaxis=list(title="N validated targets"),
+  plot_bgcolor="white", paper_bgcolor="white")
+```
+
+## 3. Variance Suppression Score (VSS)
+
+```{r vss-plot, fig.height=3.5}
+plot_ly(x=~vss_scores$vss, type="histogram", nbinsx=20,
+  marker=list(color="#2E4B7A", line=list(color="white", width=0.5)),
+  hovertemplate="VSS: %{x:.4f}<br>Count: %{y}<extra></extra>") |>
+layout(title="VSS Distribution",
+  xaxis=list(title="Variance Suppression Score"), yaxis=list(title="Count"),
+  shapes=list(list(type="line",
+    x0=median(vss_scores$vss), x1=median(vss_scores$vss),
+    y0=0, y1=1, yref="paper",
+    line=list(color="#D55E00", dash="dash", width=2))),
+  plot_bgcolor="white", paper_bgcolor="white")
+```
+
+```{r vss-table}
+top_vss <- head(vss_scores[order(-vss_scores$vss), ], 10)
+top_vss$mirna <- gsub("hsa-mir-", "hsa-miR-", top_vss$mirna)
+top_vss$vss   <- round(top_vss$vss, 5)
+datatable(top_vss, caption="Top 10 miRNAs by VSS", rownames=FALSE,
+  options=list(pageLength=10, dom="t"),
+  colnames=c("miRNA", "VSS", "N Targets"))
+```
+
+## 4. Coherence Induction Score
+
+```{r coherence-plot, fig.height=3.5}
+sig_n <- sum(combined$coherence_p < 0.05, na.rm=TRUE)
+plot_ly(x=~combined$coherence_score, type="histogram", nbinsx=20,
+  marker=list(color="#009E73", line=list(color="white", width=0.5)),
+  hovertemplate="Coherence: %{x:.4f}<br>Count: %{y}<extra></extra>") |>
+layout(title=paste0("Coherence Score Distribution  (", sig_n, " miRNAs p < 0.05)"),
+  xaxis=list(title="Coherence Induction Score"), yaxis=list(title="Count"),
+  shapes=list(list(type="line", x0=0, x1=0, y0=0, y1=1, yref="paper",
+    line=list(color="#D55E00", dash="dash", width=2))),
+  plot_bgcolor="white", paper_bgcolor="white")
+```
+
+## 5. Bottleneck Classification
+
+```{r phase-diagram, fig.height=5}
+vss_med <- median(combined$vss_norm)
+coh_med <- median(combined$coherence_norm)
+combined$label <- gsub("hsa-mir-", "miR-", combined$mirna)
+combined$sz    <- scales::rescale(combined$bottleneck_index, to=c(5, 18))
+
+plot_ly(combined,
+  x=~vss_norm, y=~coherence_norm,
+  type="scatter", mode="markers",
+  color=~class, colors=class_colors,
+  marker=list(size=~sz, opacity=0.85, line=list(color="white", width=0.5)),
+  text=~paste0("<b>", label, "</b><br>Class: ", class,
+    "<br>VSS: ", round(vss, 5),
+    "<br>Coherence: ", round(coherence_score, 4),
+    "<br>Bottleneck Index: ", round(bottleneck_index, 4)),
+  hoverinfo="text") |>
+layout(
+  title="miRNA Bottleneck Classification — Phase Diagram",
+  xaxis=list(title="VSS (normalised)", zeroline=FALSE),
+  yaxis=list(title="Coherence Score (normalised)", zeroline=FALSE),
+  shapes=list(
+    list(type="line", x0=vss_med, x1=vss_med, y0=0, y1=1, yref="paper",
+      line=list(color="grey", dash="dot", width=1.5)),
+    list(type="line", y0=coh_med, y1=coh_med, x0=0, x1=1, xref="paper",
+      line=list(color="grey", dash="dot", width=1.5))),
+  annotations=list(
+    list(x=0.98, y=0.98, text="<b>Dual</b>",      xref="paper", yref="paper", showarrow=FALSE, font=list(color="#D55E00", size=11), xanchor="right"),
+    list(x=0.98, y=0.02, text="<b>Silencer</b>",  xref="paper", yref="paper", showarrow=FALSE, font=list(color="#0072B2", size=11), xanchor="right"),
+    list(x=0.02, y=0.98, text="<b>Conductor</b>", xref="paper", yref="paper", showarrow=FALSE, font=list(color="#009E73", size=11), xanchor="left"),
+    list(x=0.02, y=0.02, text="<b>Weak</b>",      xref="paper", yref="paper", showarrow=FALSE, font=list(color="#999",    size=11), xanchor="left")),
+  plot_bgcolor="white", paper_bgcolor="white",
+  legend=list(title=list(text="<b>Archetype</b>")))
+```
+
+```{r archetype-bar, fig.height=3}
+cls_tbl <- as.data.frame(table(Class=combined$class))
+cls_tbl$color <- class_colors[as.character(cls_tbl$Class)]
+cls_tbl$Class <- tools::toTitleCase(as.character(cls_tbl$Class))
+plot_ly(cls_tbl, x=~Class, y=~Freq, type="bar",
+  marker=list(color=~color),
+  hovertemplate="%{x}: %{y} miRNAs<extra></extra>") |>
+layout(title="Archetype Distribution",
+  xaxis=list(title=""), yaxis=list(title="N miRNAs"),
+  plot_bgcolor="white", paper_bgcolor="white")
+```
+
+## 6. Top Bottleneck miRNAs
+
+```{r top-table}
+cox_sub <- cox_ind[, c("mirna","hr","p")]
+mrg     <- merge(combined, cox_sub, by="mirna", all.x=TRUE)
+mrg     <- mrg[order(-mrg$bottleneck_index), ]
+out <- data.frame(
+  miRNA            = gsub("hsa-mir-", "hsa-miR-", mrg$mirna),
+  Class            = tools::toTitleCase(mrg$class),
+  VSS              = round(mrg$vss, 5),
+  Coherence        = round(mrg$coherence_score, 4),
+  `Bottleneck Index`= round(mrg$bottleneck_index, 4),
+  `HR (OS)`        = round(mrg$hr, 3),
+  `p-value`        = signif(mrg$p, 3),
+  check.names=FALSE)
+datatable(out, caption="All scored miRNAs ranked by bottleneck index",
+  rownames=FALSE, filter="top",
+  options=list(pageLength=15, scrollX=TRUE)) |>
+formatStyle("p-value",
+  color=styleInterval(0.05, c("#D55E00","#333")),
+  fontWeight=styleInterval(0.05, c("bold","normal")))
+```
+
+## 7. Survival Analysis
+
+```{r survival-metrics}
+cox_s  <- summary(cox_final)
+hr_val <- round(cox_s$coefficients["composite","exp(coef)"], 3)
+ci_lo  <- round(cox_s$conf.int["composite", 3], 3)
+ci_hi  <- round(cox_s$conf.int["composite", 4], 3)
+p_val  <- signif(cox_s$coefficients["composite","Pr(>|z|)"], 3)
+c_idx  <- round(cox_s$concordance[1], 3)
+lr     <- survdiff(Surv(OS_days, OS_status) ~ score_group, data=survival_df)
+lr_p   <- signif(pchisq(lr$chisq, df=1, lower.tail=FALSE), 3)
+med_hi <- median(survival_df$OS_days[survival_df$score_group=="High"], na.rm=TRUE)
+med_lo <- median(survival_df$OS_days[survival_df$score_group=="Low"],  na.rm=TRUE)
+```
+
+<div class="metric-grid">
+<div class="metric-card"><div class="metric-value">`r hr_val`</div><div class="metric-label">Hazard Ratio</div></div>
+<div class="metric-card"><div class="metric-value">`r paste0(ci_lo,"–",ci_hi)`</div><div class="metric-label">95% CI</div></div>
+<div class="metric-card"><div class="metric-value">`r p_val`</div><div class="metric-label">Cox p-value</div></div>
+<div class="metric-card"><div class="metric-value">`r c_idx`</div><div class="metric-label">C-index</div></div>
+<div class="metric-card"><div class="metric-value">`r lr_p`</div><div class="metric-label">Log-rank p</div></div>
+<div class="metric-card"><div class="metric-value">`r med_hi` vs `r med_lo`</div><div class="metric-label">Median OS (days) Hi vs Lo</div></div>
+</div>
+
+```{r km-plot, fig.height=5}
+km    <- survfit(Surv(OS_days, OS_status) ~ score_group, data=survival_df)
+km_df <- data.frame(time=km$time, surv=km$surv, lower=km$lower, upper=km$upper,
+  group=rep(names(km$strata), km$strata))
+km_df$grp <- ifelse(grepl("High", km_df$group), "High Score", "Low Score")
+
+plot_ly() |>
+add_trace(data=km_df[km_df$grp=="High Score",],
+  x=~time, y=~surv, type="scatter", mode="lines", name="High Score",
+  line=list(color="#D55E00", width=2.5),
+  hovertemplate="Day %{x}<br>Survival: %{y:.3f}<extra>High Score</extra>") |>
+add_trace(data=km_df[km_df$grp=="High Score",],
+  x=~c(time,rev(time)), y=~c(upper,rev(lower)),
+  type="scatter", mode="none", fill="toself",
+  fillcolor="rgba(213,94,0,0.1)", showlegend=FALSE, hoverinfo="skip") |>
+add_trace(data=km_df[km_df$grp=="Low Score",],
+  x=~time, y=~surv, type="scatter", mode="lines", name="Low Score",
+  line=list(color="#0072B2", width=2.5),
+  hovertemplate="Day %{x}<br>Survival: %{y:.3f}<extra>Low Score</extra>") |>
+add_trace(data=km_df[km_df$grp=="Low Score",],
+  x=~c(time,rev(time)), y=~c(upper,rev(lower)),
+  type="scatter", mode="none", fill="toself",
+  fillcolor="rgba(0,114,178,0.1)", showlegend=FALSE, hoverinfo="skip") |>
+layout(
+  title=paste0("Kaplan-Meier Overall Survival  (log-rank p = ", lr_p, ")"),
+  xaxis=list(title="Time (days)", zeroline=FALSE),
+  yaxis=list(title="Survival Probability", range=c(0,1), zeroline=FALSE),
+  plot_bgcolor="white", paper_bgcolor="white",
+  legend=list(x=0.75, y=0.95),
+  annotations=list(list(
+    x=0.02, y=0.05, xref="paper", yref="paper", showarrow=FALSE, align="left",
+    text=paste0("HR = ",hr_val," (",ci_lo,"–",ci_hi,")<br>Cox p = ",p_val,"  |  C-index = ",c_idx),
+    font=list(size=11, color="#333"),
+    bgcolor="#f8f9fa", bordercolor="#dee2e6", borderwidth=1)))
+```
+
+```{r cox-table}
+cc <- as.data.frame(summary(cox_final)$coefficients)
+raw_vars <- rownames(cc)
+var_labels <- raw_vars
+var_labels[var_labels == "composite"]      <- "Composite Score"
+var_labels[var_labels == "age"]            <- "Age"
+var_labels[grepl("stage", var_labels)]     <- paste0("Stage ", gsub("stage_clean","", var_labels[grepl("stage", var_labels)]))
+cc$Variable <- var_labels
+cc <- cc[, c("Variable","exp(coef)","se(coef)","z","Pr(>|z|)")]
+colnames(cc) <- c("Variable","HR","SE","z","p-value")
+cc$HR <- round(cc$HR,3); cc$SE <- round(cc$SE,4)
+cc$z  <- round(cc$z,3);  cc$`p-value` <- signif(cc$`p-value`,3)
+datatable(cc, rownames=FALSE, options=list(dom="t",pageLength=10)) |>
+formatStyle("p-value",
+  color=styleInterval(0.05, c("#D55E00","#333")),
+  fontWeight=styleInterval(0.05, c("bold","normal")))
+```
+
+## 8. Per-Patient Composite Score
+
+```{r patient-scores, fig.height=4}
+sc_df <- data.frame(patient=names(patient_scores), score=as.numeric(patient_scores))
+sc_df <- sc_df[order(sc_df$score), ]
+sc_df$color <- ifelse(sc_df$score >= median(sc_df$score), "#D55E00", "#0072B2")
+sc_df$group <- ifelse(sc_df$score >= median(sc_df$score), "High", "Low")
+
+plot_ly(sc_df, x=~seq_along(score), y=~score, type="bar",
+  marker=list(color=~color),
+  text=~paste0(patient,"<br>Score: ",round(score,4),"<br>Group: ",group),
+  hoverinfo="text") |>
+layout(
+  title="Composite Bottleneck Score per Patient",
+  xaxis=list(title="Patients (ranked)", showticklabels=FALSE),
+  yaxis=list(title="Composite Score"),
+  shapes=list(list(type="line",
+    x0=0, x1=nrow(sc_df), y0=median(sc_df$score), y1=median(sc_df$score),
+    line=list(color="#333", dash="dash", width=1.5))),
+  plot_bgcolor="white", paper_bgcolor="white")
+```
+
+## 9. Methods Summary
+
+<div class="section-box">
+
+**Pipeline:** mirBottleneck v`r params$pkg_version`
+
+**Cohort:** `r params$cohort_name` — `r nrow(clinical)` patients (`r nrow(survival_df)` with survival data)
+
+**Network:** `r nrow(targets)` miRNAs from miRTarBase via multiMiR; minimum 5 validated targets required.
+
+**VSS:** Mean R² from linear regression of each validated target on miRNA expression across patients.
+
+**Coherence:** Δ mean pairwise Pearson correlation between high- and low-expression patient groups; empirical p-value by permutation (n = 200).
+
+**Classification:** Median splits of normalised VSS and coherence scores → dual / silencer / conductor / weak.
+
+**Composite score:** Direction-aware weighted mean of miRNA expression for contributing miRNAs (individual Cox p < 0.15); weights = |Cox coefficient|.
+
+**Survival:** Cox proportional hazards adjusted for age + tumour stage; log-rank test for High vs Low groups.
+
+</div>
+
+## 10. Session Info
+
+```{r session, echo=TRUE}
+sessionInfo()
+```
+
+---
+
+<div style="text-align:center;color:#aaa;font-size:11px;margin-top:30px">
+Generated by mirBottleneck v`r params$pkg_version` &nbsp;·&nbsp;
+<a href="https://github.com/MarkBarsoumMarkarian/mirBottleneck" style="color:#aaa">GitHub</a> &nbsp;·&nbsp;
+<a href="https://doi.org/10.5281/zenodo.19121116" style="color:#aaa">Zenodo</a>
+</div>
